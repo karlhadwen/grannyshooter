@@ -20,6 +20,7 @@
 		6EDA68ED1C07E4F50034616B /* RTAMBalloon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EDA68EC1C07E4F50034616B /* RTAMBalloon.swift */; };
 		6EF4A00B1BFEAA810008B6F3 /* RTAMBird.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF4A00A1BFEAA810008B6F3 /* RTAMBird.swift */; };
 		6EF4A00D1BFEAAFF0008B6F3 /* RTAMGranny.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF4A00C1BFEAAFF0008B6F3 /* RTAMGranny.swift */; };
+		87FEB1DC1C12776700F5E87F /* RTAMBirdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FEB1DB1C12776700F5E87F /* RTAMBirdManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		6EDA68EC1C07E4F50034616B /* RTAMBalloon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMBalloon.swift; sourceTree = "<group>"; };
 		6EF4A00A1BFEAA810008B6F3 /* RTAMBird.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMBird.swift; sourceTree = "<group>"; };
 		6EF4A00C1BFEAAFF0008B6F3 /* RTAMGranny.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMGranny.swift; sourceTree = "<group>"; };
+		87FEB1DB1C12776700F5E87F /* RTAMBirdManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMBirdManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 				6EC4FB901C024D9D0098179E /* RTAMBullet.swift */,
 				6EDA68EC1C07E4F50034616B /* RTAMBalloon.swift */,
 				6EC4FB921C0250470098179E /* Global.swift */,
+				87FEB1DB1C12776700F5E87F /* RTAMBirdManager.swift */,
 			);
 			path = GG;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87FEB1DC1C12776700F5E87F /* RTAMBirdManager.swift in Sources */,
 				6EF4A00B1BFEAA810008B6F3 /* RTAMBird.swift in Sources */,
 				6E3A68C61BFBB977001DD26D /* GameScene.swift in Sources */,
 				6EF4A00D1BFEAAFF0008B6F3 /* RTAMGranny.swift in Sources */,
