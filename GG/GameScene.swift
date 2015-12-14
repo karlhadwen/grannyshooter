@@ -14,7 +14,7 @@ struct PhysicsCategory {
     static let All       : UInt32 = 0xFFFFFFFF
     static let Bird  : UInt32 = 0b001
     static let Projectile: UInt32 = 0b010
-    static let Gun: UInt32 = 0b100
+    static let Gun: UInt32 = 0b011
 }
 
 
@@ -45,13 +45,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var lastBirdAdded : NSTimeInterval = 0.0
     let backgroundVelocity : CGFloat = 3.0
     let birdVelocity : CGFloat = 5.0
-    let gun = RTAMGun(size: CGSize(width: 50, height: 50))
-    let balloon = RTAMBalloon(size: CGSize(width: 30, height: 30))
-    let balloon2 = RTAMBalloon(size: CGSize(width: 30, height: 30))
+    let gun = RTAMGun(size: CGSize(width: 80, height: 50))
+//    let balloon = RTAMBalloon(size: CGSize(width: 30, height: 30))
+//    let balloon2 = RTAMBalloon(size: CGSize(width: 30, height: 30))
+    let birdManager = RTAMBirdManager()
+    let balloonManager = RTAMBalloonManager()
+    
     
     
     
     override func didMoveToView(view: SKView) {
+        
+        
         self.backgroundColor = UIColor(red:56/255, green: 206/255, blue: 249/255, alpha:1)
       
       //  let birdManager = RTAMBirdManager(gameScene: self)
@@ -71,29 +76,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         gun.runAction(SKAction.repeatActionForever(oscillate))
         
         
+        let balloon1 = balloonManager.addBalloon(gun, index: 0)!
+        let balloon2 = balloonManager.addBalloon(gun, index: 1)!
+        let balloon3 = balloonManager.addBalloon(gun, index: 2)!
+        let balloon4 = balloonManager.addBalloon(gun, index: 3)!
+ 
         
-        // half way point and add 10+
-        
-        // we set the position, and then we set the anchor point of that particular position
-        // so if we place in 20/30 position (x,y), the anchor is saying what part of the 20/30 position
-        // so if we place in 0.5,0, that's -> onwards, or if 0,0, that's bottom left.
-        
-        balloon.position = CGPointMake(70, gun.position.y + 25)
-        balloon.anchorPoint = CGPointMake(0.5, 0)
-        
-        balloon2.position = CGPointMake(90, gun.position.y + 25)
-        balloon2.anchorPoint = CGPointMake(0.5, 0)
-        
-        let oscillate2 = SKAction.oscillation(amplitude: 22,
-            timePeriod: 2,
-            midPoint: balloon.position)
-        
-        balloon.runAction(SKAction.repeatActionForever(oscillate2))
-        
-        balloon2.runAction(SKAction.repeatActionForever(oscillate2))
-        
-        addChild(balloon)
+        addChild(balloon1)
         addChild(balloon2)
+        addChild(balloon3)
+        addChild(balloon4)
         
         physicsWorld.gravity = CGVectorMake(0, 0)
         physicsWorld.contactDelegate = self
@@ -135,54 +127,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     
     
     func didBeginContact(contact: SKPhysicsContact) {
-//        var firstBody = SKPhysicsBody()
-//        var secondBody = SKPhysicsBody()
-//        
-//        
-//        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-//            firstBody = contact.bodyA
-//            secondBody = contact.bodyB
-//        } else {
-//            firstBody = contact.bodyB
-//            secondBody = contact.bodyA
-//        }
-//
-//        
-//        if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b10) {
-//            projectileDidCollideWithMonster(firstBody.node as! SKSpriteNode, bullet: secondBody.node as! SKSpriteNode)
-//        }
-//        else if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) {
-//                birdDidCollideWithGranny(firstBody.node as! SKSpriteNode, gun: secondBody.node as! SKSpriteNode)
-//        }
-     
-        let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
-        switch contactMask {
-            
-        case PhysicsCategory.Bird | PhysicsCategory.Projectile:
-            
-            
-            if contact.bodyA.categoryBitMask == PhysicsCategory.Bird {
-                projectileDidCollideWithMonster( contact.bodyA.node as! SKSpriteNode, bullet: contact.bodyB.node as! SKSpriteNode)
-            } else {
-                projectileDidCollideWithMonster( contact.bodyB.node as! SKSpriteNode, bullet: contact.bodyA.node as! SKSpriteNode)
-
-            }
-            
-        case PhysicsCategory.Bird | PhysicsCategory.Gun:
-            
-            if contact.bodyA.categoryBitMask == PhysicsCategory.Bird {
-                print("Bird hit granny")
-            } else {
-                print("Bird hit granny")
-            }
-           
-        default:
-            
-            // Nobody expects this, so satisfy the compiler and catch
-            // ourselves if we do something we didn't plan to
-            fatalError("other collision: \(contactMask)")
+        var firstBody = SKPhysicsBody()
+        var secondBody = SKPhysicsBody()
+        
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
         }
-    
+
+        
+        if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b10) {
+            if let firstNode = firstBody.node as? SKSpriteNode,
+                let secondNode = secondBody.node as? SKSpriteNode {
+            projectileDidCollideWithMonster(firstNode, bullet: secondNode)
+            }
+        }
+        else if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) {
+            if let firstNode = firstBody.node as? SKSpriteNode,
+                let secondNode = secondBody.node as? SKSpriteNode {
+                birdDidCollideWithGranny(firstNode, gun: secondNode)
+            }
+        }
         
     }
     
@@ -235,6 +204,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         print("Hit")
         bird.removeFromParent()
         bullet.removeFromParent()
+    
         
     }
     
@@ -250,12 +220,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             
             if  currentTime - self.lastBirdAdded > 0.3 {
                 self.lastBirdAdded = currentTime + 0.3
-                let birdManager = RTAMBirdManager(gameScene: self)
-                let bird = birdManager.addBird()!
+                let bird = birdManager.addBird(self)!
                 addChild(bird)
-                let topBird = birdManager.addBirdFromBottom()!
+                let topBird = birdManager.addBirdFromBottom(self)!
                 addChild(topBird)
-                let bottomBird = birdManager.addBirdFromTop()!
+                let bottomBird = birdManager.addBirdFromTop(self)!
                 addChild(bottomBird)
                 
                 

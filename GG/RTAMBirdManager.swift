@@ -45,29 +45,33 @@ extension CGPoint {
 
 class RTAMBirdManager {
     
-    var height:CGFloat
-    var width:CGFloat
+//    var height:CGFloat
+//    var width:CGFloat
     var birds = [SKSpriteNode?]()
     let birdInputLocations: [CGPoint] = [CGPoint(x: 10, y: 20), CGPoint(x: 30, y: 40), CGPoint(x: 50, y: 60)]
     
     
-    init(gameScene: SKScene) {
-        height = gameScene.size.height
-        width = gameScene.size.width
+//    init(gameScene: SKScene) {
+//        height = gameScene.size.height
+//        width = gameScene.size.width
+//    }
+    
+    init() {
+            
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func addBird() -> SKSpriteNode? {
+    func addBird(gameScene: SKScene) -> SKSpriteNode? {
         
         
         let bird = SKSpriteNode(imageNamed: "normal-bird")
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
-        bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile | PhysicsCategory.Gun
+        bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
         bird.setScale(0.04)
         bird.anchorPoint = CGPointMake(0.5, 0)
@@ -75,11 +79,11 @@ class RTAMBirdManager {
         
         
         // Selecting random y position for bird
-        let random : CGFloat = CGFloat(arc4random_uniform(UInt32(height - bird.size.height)))
+        let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.height - bird.size.height)))
     
-        bird.position = CGPointMake(width + 20, random)
+        bird.position = CGPointMake(gameScene.size.width + 20, random)
     
-        let moveTo = CGPointMake(60, height/2)
+        let moveTo = CGPointMake(60, gameScene.size.height/2)
         // 3 - Determine offset of location to projectile
         let offset = moveTo - bird.position
         
@@ -97,7 +101,7 @@ class RTAMBirdManager {
         // 9 - Create the actions
         let path = CGPathCreateMutable()
         CGPathMoveToPoint(path, nil, bird.position.x, bird.position.y)
-        if(bird.position.y >= height/2){
+        if(bird.position.y >= gameScene.size.height/2){
             CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 100 , moveTo.x, moveTo.y, realDest.x, realDest.y)
         }
         else{
@@ -118,7 +122,7 @@ class RTAMBirdManager {
         return bird
     }
     
-    func addBirdFromTop() -> SKSpriteNode? {
+    func addBirdFromTop(gameScene: SKScene) -> SKSpriteNode? {
                 let bird = SKSpriteNode(imageNamed: "normal-bird")
                 bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
                 bird.physicsBody?.dynamic = true
@@ -130,13 +134,13 @@ class RTAMBirdManager {
                 bird.name = "top-bird"
         
                 // Selecting random y position for bird
-                let random : CGFloat = CGFloat(arc4random_uniform(UInt32(width - width/1.8)) + UInt32(width/1.5))
+                let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.width - gameScene.size.width/1.8)) + UInt32(gameScene.size.width/1.5))
         
-                bird.position = CGPointMake(random, height)
+                bird.position = CGPointMake(random, gameScene.size.height)
         
         
         
-                let moveTo = CGPointMake(60, height/2)
+                let moveTo = CGPointMake(60, gameScene.size.height/2)
                 // 3 - Determine offset of location to projectile
         
                 let offset = moveTo - bird.position
@@ -162,7 +166,7 @@ class RTAMBirdManager {
     
     }
     
-    func addBirdFromBottom() -> SKSpriteNode? {
+    func addBirdFromBottom(gameScene: SKScene) -> SKSpriteNode? {
         
                 let bird = SKSpriteNode(imageNamed: "normal-bird")
                 bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
@@ -175,11 +179,11 @@ class RTAMBirdManager {
                 bird.name = "bottom-bird"
         
                 // Selecting random y position for bird
-                let random : CGFloat = CGFloat(arc4random_uniform(UInt32(width - width/1.8)) + UInt32(width/1.5))
+                let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.width - gameScene.size.width/1.8)) + UInt32(gameScene.size.width/1.5))
                 bird.position = CGPointMake(random, 0)
         
                 
-                let moveTo = CGPointMake(60, height/2)
+                let moveTo = CGPointMake(60, gameScene.size.height/2)
                // 3 - Determine offset of location to projectile
                 let offset = moveTo - bird.position
         
