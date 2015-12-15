@@ -14,6 +14,7 @@
 		6E3A68CD1BFBB977001DD26D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E3A68CC1BFBB977001DD26D /* Images.xcassets */; };
 		6E3A68D01BFBB977001DD26D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E3A68CE1BFBB977001DD26D /* LaunchScreen.xib */; };
 		6E3A68DC1BFBB977001DD26D /* GGTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3A68DB1BFBB977001DD26D /* GGTests.swift */; };
+		6E842AC41C133E0100910AFE /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E842AC31C133E0100910AFE /* GameOverScene.swift */; };
 		6EC4FB8F1C024D950098179E /* RTAMGun.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC4FB8E1C024D950098179E /* RTAMGun.swift */; };
 		6EC4FB911C024D9D0098179E /* RTAMBullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC4FB901C024D9D0098179E /* RTAMBullet.swift */; };
 		6EC4FB931C0250470098179E /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC4FB921C0250470098179E /* Global.swift */; };
@@ -45,6 +46,7 @@
 		6E3A68D51BFBB977001DD26D /* GGTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GGTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E3A68DA1BFBB977001DD26D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6E3A68DB1BFBB977001DD26D /* GGTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GGTests.swift; sourceTree = "<group>"; };
+		6E842AC31C133E0100910AFE /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
 		6EC4FB8E1C024D950098179E /* RTAMGun.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMGun.swift; sourceTree = "<group>"; };
 		6EC4FB901C024D9D0098179E /* RTAMBullet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTAMBullet.swift; sourceTree = "<group>"; };
 		6EC4FB921C0250470098179E /* Global.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
@@ -95,17 +97,18 @@
 			children = (
 				6E3A68C11BFBB977001DD26D /* AppDelegate.swift */,
 				6E3A68C51BFBB977001DD26D /* GameScene.swift */,
+				6E842AC31C133E0100910AFE /* GameOverScene.swift */,
 				6E3A68C71BFBB977001DD26D /* GameViewController.swift */,
 				6E3A68C91BFBB977001DD26D /* Main.storyboard */,
 				6E3A68CC1BFBB977001DD26D /* Images.xcassets */,
 				6E3A68CE1BFBB977001DD26D /* LaunchScreen.xib */,
 				6E3A68BF1BFBB977001DD26D /* Supporting Files */,
+				6EC4FB921C0250470098179E /* Global.swift */,
 				6EF4A00A1BFEAA810008B6F3 /* RTAMBird.swift */,
 				6EF4A00C1BFEAAFF0008B6F3 /* RTAMGranny.swift */,
 				6EC4FB8E1C024D950098179E /* RTAMGun.swift */,
 				6EC4FB901C024D9D0098179E /* RTAMBullet.swift */,
 				6EDA68EC1C07E4F50034616B /* RTAMBalloon.swift */,
-				6EC4FB921C0250470098179E /* Global.swift */,
 				87FEB1DB1C12776700F5E87F /* RTAMBirdManager.swift */,
 			);
 			path = GG;
@@ -240,6 +243,7 @@
 			files = (
 				87FEB1DC1C12776700F5E87F /* RTAMBirdManager.swift in Sources */,
 				6EF4A00B1BFEAA810008B6F3 /* RTAMBird.swift in Sources */,
+				6E842AC41C133E0100910AFE /* GameOverScene.swift in Sources */,
 				6E3A68C61BFBB977001DD26D /* GameScene.swift in Sources */,
 				6EF4A00D1BFEAAFF0008B6F3 /* RTAMGranny.swift in Sources */,
 				6EDA68ED1C07E4F50034616B /* RTAMBalloon.swift in Sources */,

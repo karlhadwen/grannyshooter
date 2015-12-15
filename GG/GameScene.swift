@@ -48,16 +48,31 @@ extension CGPoint {
     }
 }
 
+var timer = NSTimer()
+
 class GameScene: SKScene, SKPhysicsContactDelegate  {
     var lastBirdAdded : NSTimeInterval = 0.0
     let backgroundVelocity : CGFloat = 3.0
-    let birdVelocity : CGFloat = 5.0
+    let birdVelocity : CGFloat = 10.0
     let gun = RTAMGun(size: CGSize(width: 50, height: 50))
     let balloon = RTAMBalloon(size: CGSize(width: 30, height: 30))
     let balloon2 = RTAMBalloon(size: CGSize(width: 30, height: 30))
-    
+    var score: Int = 0;
+    var scoreTotalLbl = SKLabelNode(fontNamed:"Tahoma");
+
+    func update() {
+        print("test");
+        // Something cool
+    }
     
     override func didMoveToView(view: SKView) {
+        /* Setup your scene here */
+        scoreTotalLbl.fontSize = 65;
+        scoreTotalLbl.name = "Button"
+        scoreTotalLbl.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
+        scoreTotalLbl.text = String(self.score);
+        self.addChild(scoreTotalLbl)
+        
         self.backgroundColor = UIColor(red:56/255, green: 206/255, blue: 249/255, alpha:1)
         
         // position me at half way point of the height (not divide!!)
@@ -93,6 +108,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         // Making self delegate of physics world
         self.physicsWorld.gravity = CGVectorMake(0, 0)
         self.physicsWorld.contactDelegate = self
+        
+        let seconds = 3.0
+        let delay = seconds * Double(NSEC_PER_SEC)  // nanoseconds per seconds
+        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+        
+        dispatch_after(dispatchTime, dispatch_get_main_queue(), {
+            // When we have moved to this scene, let's start updating the score based on the timer
+            var timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateScoreIncrementally", userInfo: nil, repeats: true)
+        })
     }
     
     func random() -> CGFloat {
@@ -132,26 +156,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         
         // 8 - Add the shoot amount to the current position
         let realDest = shootAmount + bird.position
-        
-        
+
         // 9 - Create the actions
-//        let actionMove = SKAction.moveTo(realDest, duration: 6.0)
+        // let actionMove = SKAction.moveTo(realDest, duration: 6.0)
         
         let path = CGPathCreateMutable()
         CGPathMoveToPoint(path, nil, bird.position.x, bird.position.y)
-        if(bird.position.y >= self.frame.height/2){
+        
+        if (bird.position.y >= self.frame.height/2){
             CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 100 , gun.position.x, gun.position.y, realDest.x, realDest.y)
-        }
-        else{
+        } else {
             CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 250 , gun.position.x, gun.position.y, realDest.x, realDest.y)
         }
         
-        let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: 2.0)
+        let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: 10.0)
         
-//        let circularPath = UIBezierPath(roundedRect: CGRectMake(0, 0, 100, 100), cornerRadius: 100)
-//        let actionMove3 = SKAction.followPath(circularPath.CGPath, asOffset: false, orientToPath: false, duration: 6.0)
-//        
-
+        // let circularPath = UIBezierPath(roundedRect: CGRectMake(0, 0, 100, 100), cornerRadius: 100)
+        // let actionMove3 = SKAction.followPath(circularPath.CGPath, asOffset: false, orientToPath: false, duration: 6.0)
         
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
@@ -177,7 +198,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         // 3 - Determine offset of location to projectile
         let offset = gun.position - bird.position
         
-        
         // 6 - Get the direction of where to shoot
         let direction = offset.normalized()
         
@@ -188,7 +208,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         let realDest = shootAmount + bird.position
         
         // 9 - Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 5.0)
+        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
 
@@ -213,7 +233,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         // 3 - Determine offset of location to projectile
         let offset = gun.position - bird.position
         
-        
         // 6 - Get the direction of where to shoot
         let direction = offset.normalized()
         
@@ -224,37 +243,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         let realDest = shootAmount + bird.position
         
         // 9 - Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 5.0)
+        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
     }
-
-
     
-    
+    func updateScoreIncrementally() {
+        self.score = self.score + 1
+        scoreTotalLbl.text = String(self.score);
+    }
     
     func didBeginContact(contact: SKPhysicsContact) {
+        self.score = self.score + 5
+        scoreTotalLbl.text = String(self.score);
+
         var firstBody = SKPhysicsBody()
         var secondBody = SKPhysicsBody()
         firstBody = contact.bodyA
         secondBody = contact.bodyB
         
-        
         if ((firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b10) ||
             (secondBody.categoryBitMask == 0b1 && firstBody.categoryBitMask == 0b10)) {
                 projectileDidCollideWithMonster(firstBody.node as! SKSpriteNode, bird: secondBody.node as! SKSpriteNode)
-        }
-        else if ((firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) ||
+        } else if ((firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) ||
             (secondBody.categoryBitMask == 0b1 && firstBody.categoryBitMask == 0b11)){
                 birdDidCollideWithGranny(firstBody.node as! SKSpriteNode, gun: secondBody.node as! SKSpriteNode)
         }
-        
-        
     }
 
-    
-    
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         // 1 - Choose one of the touches to work with
         guard let touch = touches.first else {
@@ -307,7 +324,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
                 }
             }
         })
-        
     }
     
     func projectileDidCollideWithMonster(bullet:SKSpriteNode, bird:SKSpriteNode) {
@@ -318,19 +334,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     
     func birdDidCollideWithGranny(bird:SKSpriteNode, gun:SKSpriteNode) {
         print("Hit Granny")
-       // balloon.removeFromParent()
+        balloon.removeFromParent()
         
+        // check if all ballons are gone, if they are, run this
+        let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+        let gameOverScene = GameOverScene(size: self.size, won: false)
+        self.view?.presentScene(gameOverScene, transition: reveal)
     }
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
-        if currentTime - self.lastBirdAdded > 0.3 {
-            self.lastBirdAdded = currentTime + 0.3
+        if currentTime - self.lastBirdAdded > 1 {
+            self.lastBirdAdded = currentTime + 3
             self.addBird()
             self.addBirdfromTop()
             self.addBirdfromBottom()
         }
-        
-       // self.moveObstacle()
     }
 }
