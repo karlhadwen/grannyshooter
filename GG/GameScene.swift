@@ -10,70 +10,53 @@ import SpriteKit
 
 struct PhysicsCategory {
     static let None      : UInt32 = 0
-    static let All       : UInt32 = UInt32.max
-    static let Bird  : UInt32 = 0b1       // 1
-    static let Projectile: UInt32 = 0b10      // 2
-    static let Gun: UInt32 = 0b11
+    static let All       : UInt32 = 0xFFFFFFFF
+    static let Bird  : UInt32 = 0b001
+    static let Projectile: UInt32 = 0b010
+    static let Gun: UInt32 = 0b011
 }
 
-func + (left: CGPoint, right: CGPoint) -> CGPoint {
-    return CGPoint(x: left.x + right.x, y: left.y + right.y)
-}
 
-func - (left: CGPoint, right: CGPoint) -> CGPoint {
-    return CGPoint(x: left.x - right.x, y: left.y - right.y)
-}
-
-func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
-    return CGPoint(x: point.x * scalar, y: point.y * scalar)
-}
-
-func / (point: CGPoint, scalar: CGFloat) -> CGPoint {
-    return CGPoint(x: point.x / scalar, y: point.y / scalar)
-}
-
-#if !(arch(x86_64) || arch(arm64))
-    func sqrt(a: CGFloat) -> CGFloat {
-        return CGFloat(sqrtf(Float(a)))
-    }
-#endif
-
-extension CGPoint {
-    func length() -> CGFloat {
-        return sqrt(x*x + y*y)
-    }
+let π = CGFloat(M_PI)
+extension SKAction {
     
-    func normalized() -> CGPoint {
-        return self / length()
+    // amplitude  - the amount the height will vary by, set this to 200 in your case.
+    // timePeriod - the time it takes for one complete cycle
+    // midPoint   - the point around which the oscillation occurs.
+    
+    static func oscillation(amplitude a: CGFloat, timePeriod t: Double, midPoint: CGPoint) -> SKAction {
+        let action = SKAction.customActionWithDuration(t) { node, currentTime in
+            let displacement = a * sin(2 * π * currentTime / CGFloat(t))
+            node.position.y = midPoint.y + displacement
+        }
+        
+        return action
     }
 }
 
-var timer = NSTimer()
 
 class GameScene: SKScene, SKPhysicsContactDelegate  {
+    var countDownLabel = SKLabelNode(text: "3")
+    var countDownDone: Bool = false
+    var timer = NSTimer()
+    var counter: Int = 3
     var lastBirdAdded : NSTimeInterval = 0.0
     let backgroundVelocity : CGFloat = 3.0
-    let birdVelocity : CGFloat = 10.0
-    let gun = RTAMGun(size: CGSize(width: 50, height: 50))
-    let balloon = RTAMBalloon(size: CGSize(width: 30, height: 30))
-    let balloon2 = RTAMBalloon(size: CGSize(width: 30, height: 30))
-    var score: Int = 0;
-    var scoreTotalLbl = SKLabelNode(fontNamed:"Tahoma");
+    let birdVelocity : CGFloat = 5.0
+    let gun = RTAMGun(size: CGSize(width: 80, height: 50))
+    let birdManager = RTAMBirdManager()
+    let balloonManager = RTAMBalloonManager()
 
-    func update() {
-        print("test");
-        // Something cool
-    }
-    
     override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
+    	/* Setup your scene here */
         scoreTotalLbl.fontSize = 65;
         scoreTotalLbl.name = "Button"
         scoreTotalLbl.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
         scoreTotalLbl.text = String(self.score);
         self.addChild(scoreTotalLbl)
-        
-        self.backgroundColor = UIColor(red:56/255, green: 206/255, blue: 249/255, alpha:1)
+
+		self.backgroundColor = UIColor(red:56/255, green: 206/255, blue: 249/255, alpha:1)
+      	let birdManager = RTAMBirdManager()
         
         // position me at half way point of the height (not divide!!)
         gun.physicsBody = SKPhysicsBody(rectangleOfSize: gun.size)
@@ -82,33 +65,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         gun.physicsBody?.contactTestBitMask = PhysicsCategory.Bird
         gun.physicsBody?.collisionBitMask = PhysicsCategory.None
         gun.position = CGPointMake(60, view.frame.size.height/2)
-        
-        // half way point and add 10+
-        
-        // we set the position, and then we set the anchor point of that particular position
-        // so if we place in 20/30 position (x,y), the anchor is saying what part of the 20/30 position
-        // so if we place in 0.5,0, that's -> onwards, or if 0,0, that's bottom left.
-        balloon.position = CGPointMake(70, view.frame.size.height/2 + 25)
-        balloon.anchorPoint = CGPointMake(0.5, 0)
-        
-        balloon2.position = CGPointMake(90, view.frame.size.height/2 + 25)
-        balloon2.anchorPoint = CGPointMake(0.5, 0)
-        
         addChild(gun)
-        addChild(balloon)
+        
+        let oscillate = SKAction.oscillation(amplitude: 22,
+            timePeriod: 2,
+            midPoint: gun.position)
+        gun.runAction(SKAction.repeatActionForever(oscillate))
+        
+        
+        let balloon1 = balloonManager.addBalloon(gun, index: 0)!
+        let balloon2 = balloonManager.addBalloon(gun, index: 1)!
+        let balloon3 = balloonManager.addBalloon(gun, index: 2)!
+        let balloon4 = balloonManager.addBalloon(gun, index: 3)!
+ 
+        
+        addChild(balloon1)
         addChild(balloon2)
+        addChild(balloon3)
+        addChild(balloon4)
         
         physicsWorld.gravity = CGVectorMake(0, 0)
         physicsWorld.contactDelegate = self
         
-        self.addBird()
-        self.addBirdfromTop()
-        self.addBirdfromBottom()
+        countDownLabel.position = CGPointMake( self.frame.size.width/2, self.frame.size.height/2)
+        countDownLabel.text = String(counter)
+        countDownLabel.fontColor = UIColor(CGColor: UIColor.blackColor().CGColor)
+        
+        timer = NSTimer.scheduledTimerWithTimeInterval(2, target:self, selector: Selector("updateCounter"), userInfo: nil, repeats: true)
+        
+        addChild(countDownLabel)
+        
         
         // Making self delegate of physics world
         self.physicsWorld.gravity = CGVectorMake(0, 0)
         self.physicsWorld.contactDelegate = self
-        
+
         let seconds = 3.0
         let delay = seconds * Double(NSEC_PER_SEC)  // nanoseconds per seconds
         let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
@@ -118,6 +109,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             var timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateScoreIncrementally", userInfo: nil, repeats: true)
         })
     }
+
+    func updateCounter() {
+        counter = counter - 1
+        countDownLabel.text = String(counter)
+        
+        if (counter == 0) {
+            timer.invalidate()
+            countDownLabel.removeFromParent()
+            countDownDone = true
+        }
+    }
     
     func random() -> CGFloat {
         return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
@@ -125,128 +127,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     
     func random(min: CGFloat, max: CGFloat) -> CGFloat {
         return random() * (max - min) + min
-    }
-    
-    func addBird() {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
-        bird.physicsBody?.dynamic = true
-        bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
-        bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
-        bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
-        bird.anchorPoint = CGPointMake(0.5, 0)
-        bird.name = "normal-bird"
-        
-        // Selecting random y position for bird
-        let random : CGFloat = CGFloat(arc4random_uniform(UInt32(self.frame.size.height - bird.size.height)))
-        bird.position = CGPointMake(self.frame.size.width + 20, random)
-        
-        self.addChild(bird)
-        
-        // 3 - Determine offset of location to projectile
-        let offset = gun.position - bird.position
-        
-        
-        // 6 - Get the direction of where to shoot
-        let direction = offset.normalized()
-        
-        // 7 - Make it shoot far enough to be guaranteed off screen
-        let shootAmount = direction * 1000
-        
-        // 8 - Add the shoot amount to the current position
-        let realDest = shootAmount + bird.position
-
-        // 9 - Create the actions
-        // let actionMove = SKAction.moveTo(realDest, duration: 6.0)
-        
-        let path = CGPathCreateMutable()
-        CGPathMoveToPoint(path, nil, bird.position.x, bird.position.y)
-        
-        if (bird.position.y >= self.frame.height/2){
-            CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 100 , gun.position.x, gun.position.y, realDest.x, realDest.y)
-        } else {
-            CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 250 , gun.position.x, gun.position.y, realDest.x, realDest.y)
-        }
-        
-        let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: 10.0)
-        
-        // let circularPath = UIBezierPath(roundedRect: CGRectMake(0, 0, 100, 100), cornerRadius: 100)
-        // let actionMove3 = SKAction.followPath(circularPath.CGPath, asOffset: false, orientToPath: false, duration: 6.0)
-        
-        let actionMoveDone = SKAction.removeFromParent()
-        bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-    }
-    
-    func addBirdfromTop() {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
-        bird.physicsBody?.dynamic = true
-        bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
-        bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
-        bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
-        bird.anchorPoint = CGPointMake(0.5, 0)
-        bird.name = "top-bird"
-        
-        // Selecting random y position for bird
-        let random : CGFloat = CGFloat(arc4random_uniform(UInt32(self.frame.size.width - self.frame.size.width/1.8)) + UInt32(self.frame.size.width/1.5))
-        
-        bird.position = CGPointMake(random, self.frame.size.height)
-        self.addChild(bird)
-        
-        // 3 - Determine offset of location to projectile
-        let offset = gun.position - bird.position
-        
-        // 6 - Get the direction of where to shoot
-        let direction = offset.normalized()
-        
-        // 7 - Make it shoot far enough to be guaranteed off screen
-        let shootAmount = direction * 1000
-        
-        // 8 - Add the shoot amount to the current position
-        let realDest = shootAmount + bird.position
-        
-        // 9 - Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
-        let actionMoveDone = SKAction.removeFromParent()
-        bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-
-    }
-    
-    func addBirdfromBottom() {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
-        bird.physicsBody?.dynamic = true
-        bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
-        bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
-        bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
-        bird.anchorPoint = CGPointMake(0.5, 0)
-        bird.name = "bottom-bird"
-        
-        // Selecting random y position for bird
-        let random : CGFloat = CGFloat(arc4random_uniform(UInt32(self.frame.size.width - self.frame.size.width/1.8)) + UInt32(self.frame.size.width/1.5))
-        bird.position = CGPointMake(random, 0)
-        self.addChild(bird)
-        
-        // 3 - Determine offset of location to projectile
-        let offset = gun.position - bird.position
-        
-        // 6 - Get the direction of where to shoot
-        let direction = offset.normalized()
-        
-        // 7 - Make it shoot far enough to be guaranteed off screen
-        let shootAmount = direction * 1000
-        
-        // 8 - Add the shoot amount to the current position
-        let realDest = shootAmount + bird.position
-        
-        // 9 - Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
-        let actionMoveDone = SKAction.removeFromParent()
-        bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        
     }
     
     func updateScoreIncrementally() {
@@ -260,15 +140,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
 
         var firstBody = SKPhysicsBody()
         var secondBody = SKPhysicsBody()
-        firstBody = contact.bodyA
-        secondBody = contact.bodyB
         
-        if ((firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b10) ||
-            (secondBody.categoryBitMask == 0b1 && firstBody.categoryBitMask == 0b10)) {
-                projectileDidCollideWithMonster(firstBody.node as! SKSpriteNode, bird: secondBody.node as! SKSpriteNode)
-        } else if ((firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) ||
-            (secondBody.categoryBitMask == 0b1 && firstBody.categoryBitMask == 0b11)){
-                birdDidCollideWithGranny(firstBody.node as! SKSpriteNode, gun: secondBody.node as! SKSpriteNode)
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+
+        
+        if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b10) {
+            if let firstNode = firstBody.node as? SKSpriteNode,
+                let secondNode = secondBody.node as? SKSpriteNode {
+            projectileDidCollideWithMonster(firstNode, bullet: secondNode)
+            }
+        } else if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) {
+            if let firstNode = firstBody.node as? SKSpriteNode,
+                let secondNode = secondBody.node as? SKSpriteNode {
+                birdDidCollideWithGranny(firstNode, gun: secondNode)
+            }
         }
     }
 
@@ -282,7 +173,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         
         // 2 - Set up initial location of projectile
         let projectile = RTAMBullet(size: CGSizeMake(5, 5))
-        projectile.position = CGPoint(x: gun.position.x+gun.size.width, y: gun.position.y)
+        projectile.position = CGPoint(x: gun.position.x + gun.size.width, y: gun.position.y)
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
         projectile.physicsBody?.dynamic = true
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
@@ -312,43 +203,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         let actionMove = SKAction.moveTo(realDest, duration: 2.0)
         let actionMoveDone = SKAction.removeFromParent()
         projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        
     }
     
-    func moveObstacle() {
-        self.enumerateChildNodesWithName("normal-bird", usingBlock: { (node, stop) -> Void in
-            if let obstacle = node as? SKSpriteNode {
-                obstacle.position = CGPoint(x: obstacle.position.x - self.birdVelocity, y: obstacle.position.y)
-                if obstacle.position.x < 0 {
-                    obstacle.removeFromParent()
-                }
-            }
-        })
-    }
-    
-    func projectileDidCollideWithMonster(bullet:SKSpriteNode, bird:SKSpriteNode) {
+    func projectileDidCollideWithMonster(bird:SKSpriteNode, bullet:SKSpriteNode) {
         print("Hit")
-        bullet.removeFromParent()
         bird.removeFromParent()
+        bullet.removeFromParent()
     }
     
-    func birdDidCollideWithGranny(bird:SKSpriteNode, gun:SKSpriteNode) {
+    func birdDidCollideWithGranny(bird: SKSpriteNode, gun: SKSpriteNode) {
         print("Hit Granny")
-        balloon.removeFromParent()
         
         // check if all ballons are gone, if they are, run this
         let reveal = SKTransition.flipHorizontalWithDuration(0.5)
         let gameOverScene = GameOverScene(size: self.size, won: false)
         self.view?.presentScene(gameOverScene, transition: reveal)
     }
-   
+    
     override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
-        if currentTime - self.lastBirdAdded > 1 {
-            self.lastBirdAdded = currentTime + 3
-            self.addBird()
-            self.addBirdfromTop()
-            self.addBirdfromBottom()
+        if countDownDone {
+            if currentTime - self.lastBirdAdded > 0.3 {
+                self.lastBirdAdded = currentTime + 0.3
+                let bird = birdManager.addBird(self)!
+                addChild(bird)
+                let topBird = birdManager.addBirdFromBottom(self)!
+                addChild(topBird)
+                let bottomBird = birdManager.addBirdFromTop(self)!
+                addChild(bottomBird)
+            }
         }
     }
 }
