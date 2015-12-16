@@ -1,11 +1,3 @@
-//
-//  RTAMBalloon.swift
-//  GG
-//
-//  Created by Karl Hadwen on 27/11/2015.
-//  Copyright © 2015 Karl Hadwen. All rights reserved.
-//
-
 import Foundation
 import SpriteKit
 

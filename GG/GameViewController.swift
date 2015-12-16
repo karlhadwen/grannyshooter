@@ -1,11 +1,3 @@
-//
-//  GameViewController.swift
-//  GG
-//
-//  Created by Karl Hadwen on 17/11/2015.
-//  Copyright (c) 2015 Karl Hadwen. All rights reserved.
-//
-
 import UIKit
 import SpriteKit
 

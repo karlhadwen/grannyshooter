@@ -1,11 +1,3 @@
-//
-//  RTAMBird.swift
-//  GG
-//
-//  Created by Karl Hadwen on 20/11/2015.
-//  Copyright (c) 2015 Karl Hadwen. All rights reserved.
-//
-
 import Foundation
 import SpriteKit
 
@@ -15,12 +7,12 @@ class RTAMGranny: SKSpriteNode {
     }
     
     init(size: CGSize) {
-        super.init(texture: nil, color: UIColor.redColor(), size: CGSizeMake(size.width, size.height))
+        super.init(texture: SKTexture(imageNamed: "granny"), color: UIColor.blackColor(), size: CGSizeMake(size.width,  size.height))
     }
     
     func addGranny() {
         // Initializing granny node
-        mainInstance.granny = SKSpriteNode()
+        mainInstance.granny = SKSpriteNode(imageNamed: "granny")
         mainInstance.granny.setScale(0.5)
         mainInstance.granny.zRotation = CGFloat(-M_PI/2)
         

@@ -1,16 +1,8 @@
-//
-//  GameOverScene.swift
-//  GG
-//
-//  Created by Karl Hadwen on 05/12/2015.
-//  Copyright © 2015 Karl Hadwen. All rights reserved.
-//
-
 import Foundation
 import SpriteKit
 
 class GameOverScene: SKScene {
-    init(size: CGSize, won:Bool) {
+    init(size: CGSize, won: Bool) {
         super.init(size: size)
         backgroundColor = SKColor.whiteColor()
         
