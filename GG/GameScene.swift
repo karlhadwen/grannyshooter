@@ -5,7 +5,7 @@ struct PhysicsCategory {
     static let All: UInt32 = 0xFFFFFFFF
     static let Bird: UInt32 = 0b001
     static let Projectile: UInt32 = 0b010
-    static let Gun: UInt32 = 0b011
+    static let Granny: UInt32 = 0b011
 }
 
 let π = CGFloat(M_PI)
@@ -34,10 +34,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var lastBirdAdded : NSTimeInterval = 0.0;
     let backgroundVelocity : CGFloat = 3.0;
     let birdVelocity : CGFloat = 5.0;
-    let gun = RTAMGun(size: CGSize(width: 80, height: 50));
+    let granny = RTAMGranny(size: CGSize(width: 80, height: 50));
     let birdManager = RTAMBirdManager();
     let balloonManager = RTAMBalloonManager();
     var score: Int = 0;
+    var numberOfGrannyHitsLeft = 4;
 
     override func didMoveToView(view: SKView) {
         //TODO: Let's clean this up and create a file for GUI elements
@@ -51,21 +52,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         self.backgroundColor = UIColor(red:56/255, green: 206/255, blue: 249/255, alpha:1);
         
         // Position me at half way point of the height (not divide!!)
-        gun.physicsBody = SKPhysicsBody(rectangleOfSize: gun.size);
-        gun.physicsBody?.dynamic = true;
-        gun.physicsBody?.categoryBitMask = PhysicsCategory.Gun;
-        gun.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
-        gun.physicsBody?.collisionBitMask = PhysicsCategory.None;
-        gun.position = CGPointMake(60, view.frame.size.height/2);
-        addChild(gun)
+        granny.physicsBody = SKPhysicsBody(rectangleOfSize: granny.size);
+        granny.physicsBody?.dynamic = true;
+        granny.physicsBody?.categoryBitMask = PhysicsCategory.Granny;
+        granny.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
+        granny.physicsBody?.collisionBitMask = PhysicsCategory.None;
+        granny.position = CGPointMake(60, view.frame.size.height/2);
+        addChild(granny)
         
-        let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: gun.position);
-        gun.runAction(SKAction.repeatActionForever(oscillate));
+        let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: granny.position);
+        granny.runAction(SKAction.repeatActionForever(oscillate));
         
-        let balloon1 = balloonManager.addBalloon(gun, index: 0)!
-        let balloon2 = balloonManager.addBalloon(gun, index: 1)!
-        let balloon3 = balloonManager.addBalloon(gun, index: 2)!
-        let balloon4 = balloonManager.addBalloon(gun, index: 3)!
+        let balloon1 = balloonManager.addBalloon(granny, index: 0)!
+        let balloon2 = balloonManager.addBalloon(granny, index: 1)!
+        let balloon3 = balloonManager.addBalloon(granny, index: 2)!
+        let balloon4 = balloonManager.addBalloon(granny, index: 3)!
  
         addChild(balloon1);
         addChild(balloon2);
@@ -142,7 +143,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         } else if (firstBody.categoryBitMask == 0b1 && secondBody.categoryBitMask == 0b11) {
             if let firstNode = firstBody.node as? SKSpriteNode,
                 let secondNode = secondBody.node as? SKSpriteNode {
-                    birdDidCollideWithGranny(firstNode, gun: secondNode)
+                    birdDidCollideWithGranny(firstNode, granny: secondNode)
             }
         }
     }
@@ -157,7 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         
         // Set up initial location of projectile
         let projectile = RTAMBullet(size: CGSizeMake(5, 5))
-        projectile.position = CGPoint(x: gun.position.x + gun.size.width, y: gun.position.y)
+        projectile.position = CGPoint(x: granny.position.x + granny.size.width, y: granny.position.y)
         projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
         projectile.physicsBody?.dynamic = true
         projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
@@ -194,7 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         bullet.removeFromParent()
     }
     
-    func birdDidCollideWithGranny(bird: SKSpriteNode, gun: SKSpriteNode) {
+    func birdDidCollideWithGranny(bird: SKSpriteNode, granny: SKSpriteNode) {
         // Check if all ballons are gone, if they are, run this
         //let reveal = SKTransition.flipHorizontalWithDuration(0.5)
         //let gameOverScene = GameOverScene(size: self.size, won: false)
@@ -202,6 +203,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         // Game over scene
         //TODO: Once all birds are gone, do this!
         //self.view?.presentScene(gameOverScene, transition: reveal)
+        if numberOfGrannyHitsLeft > 0 {
+            numberOfGrannyHitsLeft = numberOfGrannyHitsLeft - 1
+
+            let removePosition = String(numberOfGrannyHitsLeft)
+            let node = self.childNodeWithName(removePosition)
+            balloonManager.removeBalloon(Int(removePosition)!)
+            self.removeChildrenInArray([node!])
+            bird.removeFromParent()
+            if (numberOfGrannyHitsLeft) == 0 {
+                print("game over")
+            }
+        }
     }
     
     override func update(currentTime: CFTimeInterval) {

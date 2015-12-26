@@ -5,9 +5,16 @@ class RTAMGranny: SKSpriteNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(size: CGSize) {
         super.init(texture: SKTexture(imageNamed: "granny"), color: UIColor.blackColor(), size: CGSizeMake(size.width,  size.height))
+        self.physicsBody = SKPhysicsBody(rectangleOfSize: self.size)
+        self.physicsBody?.dynamic = true
+        self.physicsBody?.categoryBitMask = PhysicsCategory.Granny
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.Bird
+        self.physicsBody?.collisionBitMask = PhysicsCategory.None
+
+        anchorPoint = CGPointMake(0, 0.5)
     }
     
     func addGranny() {
