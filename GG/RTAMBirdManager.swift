@@ -37,6 +37,7 @@ extension CGPoint {
 class RTAMBirdManager {
     var birds = [SKSpriteNode?]()
     let birdInputLocations: [CGPoint] = [CGPoint(x: 10, y: 20), CGPoint(x: 30, y: 40), CGPoint(x: 50, y: 60)]
+    var durationOfFlight = 30.0
 
     init() {}
 
@@ -84,7 +85,7 @@ class RTAMBirdManager {
             CGPathAddCurveToPoint(path, nil, bird.position.x - 200, 250 , moveTo.x, moveTo.y, realDest.x, realDest.y)
         }
         
-        let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: 10.0)
+        let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
 
@@ -123,7 +124,7 @@ class RTAMBirdManager {
         let realDest = shootAmount + bird.position
         
         // Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
+        let actionMove = SKAction.moveTo(realDest, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
@@ -162,7 +163,7 @@ class RTAMBirdManager {
         let realDest = shootAmount + bird.position
         
         // Create the actions
-        let actionMove = SKAction.moveTo(realDest, duration: 10.0)
+        let actionMove = SKAction.moveTo(realDest, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
 
