@@ -5,7 +5,7 @@ class RTAMGranny: SKSpriteNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(size: CGSize) {
         super.init(texture: SKTexture(imageNamed: "granny"), color: UIColor.blackColor(), size: CGSizeMake(size.width,  size.height))
         self.physicsBody = SKPhysicsBody(rectangleOfSize: self.size)

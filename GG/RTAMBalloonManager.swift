@@ -42,6 +42,8 @@ class RTAMBalloonManager {
         return balloon
     }
     
-    func removeBalloon(index: Int) {}
+    func removeBalloon(index: Int) {
+        self.occupiedPositions[index] = nil
+    }
 }
 
