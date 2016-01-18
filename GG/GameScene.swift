@@ -25,13 +25,12 @@ extension SKAction {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate  {
-    var timer = NSTimer();
-    var timer2 = NSTimer();
+    var timerLevels = NSTimer();
     var countDownTimer = NSTimer();
     var countDownLabel = SKLabelNode(fontNamed:"Tahoma");
     var scoreTotalLbl = SKLabelNode(fontNamed:"Tahoma");
     var countDownDone: Bool = false;
-    var counter: Int = 4;
+    var counter: Int = 3;
     var lastBirdAdded : NSTimeInterval = 0.0;
     let backgroundVelocity : CGFloat = 3.0;
     let birdVelocity : CGFloat = 5.0;
@@ -99,8 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         dispatch_after(dispatchTime, dispatch_get_main_queue(), {
             // When we have moved to this scene, let's start updating the score based on the timer
             self.scoreTotalLbl.hidden = false;
-            self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateScoreIncrementally", userInfo: nil, repeats: true)
-            self.timer2 = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
+            self.timerLevels = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
         })
     }
 
@@ -180,6 +178,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
             projectile.physicsBody?.usesPreciseCollisionDetection = true
             
+            let y = touchLocation.y - projectile.position.y
+            let x = touchLocation.x - projectile.position.x
+            let angle = atan2(y, x)
+            
             // Determine offset of location to projectile
             let offset = touchLocation - projectile.position
             
@@ -209,6 +211,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             // Create the actions
             let actionMove = SKAction.moveTo(realDest, duration: 2.0)
             let actionMoveDone = SKAction.removeFromParent()
+            let grannyMove = SKAction.rotateToAngle(angle, duration: 0.5)
+            let grannyMoveBack = SKAction.rotateToAngle(0, duration: 0.5)
+            
+            granny.runAction(SKAction.sequence([grannyMove, grannyMoveBack]))
             projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         }
     }

@@ -46,7 +46,27 @@ class RTAMBirdManager {
     }
     
     func addBird(gameScene: SKScene) -> SKSpriteNode? {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
+        let birdTextureOne = SKTexture(imageNamed:"yellowBirdOne")
+        birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureTwo = SKTexture(imageNamed:"yellowBirdTwo")
+        birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureThree = SKTexture(imageNamed:"yellowBirdThree")
+        birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFour = SKTexture(imageNamed:"yellowBirdFour")
+        birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
+        birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureSix = SKTexture(imageNamed:"yellowBirdSix")
+        birdTextureSix.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive, birdTextureSix], timePerFrame:0.2));
+        let bird = SKSpriteNode(texture: birdTextureOne)
+        
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
@@ -87,15 +107,34 @@ class RTAMBirdManager {
         
         let actionMove = SKAction.followPath(path, asOffset: false, orientToPath: false, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
+        
+        bird.runAction(flap)
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-
+        
         self.birds.append(bird)
         
         return bird
     }
     
     func addBirdFromTop(gameScene: SKScene) -> SKSpriteNode? {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
+        let birdTextureOne = SKTexture(imageNamed:"greenBirdOne")
+        birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureTwo = SKTexture(imageNamed:"greenBirdTwo")
+        birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureThree = SKTexture(imageNamed:"greenBirdThird")
+        birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFour = SKTexture(imageNamed:"greenBirdFour")
+        birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFive = SKTexture(imageNamed:"greenBirdFive")
+        birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.2));
+        let bird = SKSpriteNode(texture: birdTextureOne)
+
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
@@ -126,6 +165,8 @@ class RTAMBirdManager {
         // Create the actions
         let actionMove = SKAction.moveTo(realDest, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
+        
+        bird.runAction(flap)
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
         self.birds.append(bird)
@@ -134,7 +175,27 @@ class RTAMBirdManager {
     }
     
     func addBirdFromBottom(gameScene: SKScene) -> SKSpriteNode? {
-        let bird = SKSpriteNode(imageNamed: "normal-bird")
+        let birdTextureOne = SKTexture(imageNamed:"yellowBirdOne")
+        birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureTwo = SKTexture(imageNamed:"yellowBirdTwo")
+        birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureThree = SKTexture(imageNamed:"yellowBirdThree")
+        birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFour = SKTexture(imageNamed:"yellowBirdFour")
+        birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
+        birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let birdTextureSix = SKTexture(imageNamed:"yellowBirdSix")
+        birdTextureSix.filteringMode = SKTextureFilteringMode.Nearest
+        
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive, birdTextureSix], timePerFrame:0.2));
+        let bird = SKSpriteNode(texture: birdTextureOne)
+
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
@@ -165,6 +226,8 @@ class RTAMBirdManager {
         // Create the actions
         let actionMove = SKAction.moveTo(realDest, duration: durationOfFlight)
         let actionMoveDone = SKAction.removeFromParent()
+        
+        bird.runAction(flap)
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
 
         self.birds.append(bird)

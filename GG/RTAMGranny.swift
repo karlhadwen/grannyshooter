@@ -18,11 +18,9 @@ class RTAMGranny: SKSpriteNode {
     }
     
     func addGranny() {
-        // Initializing granny node
         mainInstance.granny = SKSpriteNode(imageNamed: "granny")
         mainInstance.granny.setScale(0.5)
         mainInstance.granny.zRotation = CGFloat(-M_PI/2)
-        
         mainInstance.granny = RTAMGranny(size: CGSizeMake(85, 85))
         
         // Adding SpriteKit physics body for collision detection
