@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Game View Controller-->
@@ -30,56 +29,50 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btX-cZ-eVz" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1299" y="430"/>
+            <point key="canvasLocation" x="1237" y="652"/>
         </scene>
-        <!--View Controller-->
+        <!--Game Start Controller-->
         <scene sceneID="cF1-AF-2zW">
             <objects>
-                <viewController id="e0V-PF-9xj" sceneMemberID="viewController">
+                <viewController id="e0V-PF-9xj" customClass="GameStartController" customModule="GG" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="XbG-fX-nSU"/>
                         <viewControllerLayoutGuide type="bottom" id="vTb-Wg-nU2"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="iLM-06-clr">
+                    <view key="view" opaque="NO" contentMode="scaleToFill" id="iLM-06-clr" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4eu-Ef-X4x">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4eu-Ef-X4x">
                                 <rect key="frame" x="195" y="280" width="32" height="30"/>
-                                <state key="normal" title="Rate">
+                                <state key="normal">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bbp-dq-xUy">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bbp-dq-xUy">
                                 <rect key="frame" x="344" y="280" width="87" height="30"/>
-                                <state key="normal" title="Leaderboard">
+                                <state key="normal">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Rn-Re-7Up">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Rn-Re-7Up">
                                 <rect key="frame" x="283" y="280" width="34" height="30"/>
-                                <state key="normal" title="Start">
+                                <state key="normal">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <connections>
-                                    <segue destination="LVB-YS-i5n" kind="show" id="quY-W2-LAV"/>
-                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.00083137051919999995" green="0.30751932360000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstItem="bbp-dq-xUy" firstAttribute="centerY" secondItem="iLM-06-clr" secondAttribute="centerY" id="GGs-NI-AyC"/>
-                            <constraint firstItem="4eu-Ef-X4x" firstAttribute="centerY" secondItem="iLM-06-clr" secondAttribute="centerY" id="T1h-Ig-WXr"/>
-                            <constraint firstItem="4eu-Ef-X4x" firstAttribute="leading" secondItem="iLM-06-clr" secondAttribute="leadingMargin" constant="175" id="b89-0o-vqQ"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="bbp-dq-xUy" secondAttribute="trailing" constant="149" id="kZo-YY-biJ"/>
-                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="centerX" secondItem="iLM-06-clr" secondAttribute="centerX" id="vAj-qr-uni"/>
-                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="centerY" secondItem="iLM-06-clr" secondAttribute="centerY" id="wIQ-ch-oXq"/>
-                        </constraints>
                     </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <connections>
+                        <segue destination="LVB-YS-i5n" kind="show" identifier="startGame" id="MCw-YQ-ulW"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0BE-Z8-6m7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="536" y="430"/>
+            <point key="canvasLocation" x="449" y="652"/>
         </scene>
     </scenes>
 </document>

@@ -13,11 +13,11 @@ class RTAMBalloonManager {
     }
     
     func addBalloon(node: SKSpriteNode, index: Int) -> SKSpriteNode? {
-        let balloon = RTAMBalloon(size: CGSize(width: 30, height: 30))
+        let balloon = RTAMBalloon(size: CGSize(width: 50, height: 87))
         balloon.anchorPoint = CGPointMake(0.5, 0)
         
         if index == 0 {
-            balloon.position = CGPointMake(node.position.x + 10, node.position.y + 25)
+            balloon.position = CGPointMake(node.position.x + 15, node.position.y + 25)
         }
         
         if (index == 1) {
@@ -25,11 +25,12 @@ class RTAMBalloonManager {
         }
         
         if (index == 2) {
-            balloon.position = CGPointMake(node.position.x + 50, node.position.y + 25)
+            balloon.position = CGPointMake(node.position.x + 45, node.position.y + 25)
+            
         }
         
         if (index == 3) {
-            balloon.position = CGPointMake(node.position.x + 70, node.position.y + 25)
+            balloon.position = CGPointMake(node.position.x + 60, node.position.y + 25)
         }
         
         balloon.name = String(index)

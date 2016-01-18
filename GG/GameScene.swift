@@ -26,16 +26,16 @@ extension SKAction {
 
 class GameScene: SKScene, SKPhysicsContactDelegate  {
     var timer = NSTimer();
-    var timerLevels = NSTimer();
+    var timer2 = NSTimer();
     var countDownTimer = NSTimer();
     var countDownLabel = SKLabelNode(fontNamed:"Tahoma");
     var scoreTotalLbl = SKLabelNode(fontNamed:"Tahoma");
     var countDownDone: Bool = false;
-    var counter: Int = 3;
+    var counter: Int = 4;
     var lastBirdAdded : NSTimeInterval = 0.0;
     let backgroundVelocity : CGFloat = 3.0;
     let birdVelocity : CGFloat = 5.0;
-    let granny = RTAMGranny(size: CGSize(width: 80, height: 50));
+    var granny = RTAMGranny(size: CGSize(width: 150, height: 150));
     let birdManager = RTAMBirdManager();
     let balloonManager = RTAMBalloonManager();
     var score: Int = 0;
@@ -59,6 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         granny.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
         granny.physicsBody?.collisionBitMask = PhysicsCategory.None;
         granny.position = CGPointMake(60, view.frame.size.height/2);
+        granny.zPosition = 1;
         addChild(granny)
         
         let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: granny.position);
@@ -68,6 +69,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         let balloon2 = balloonManager.addBalloon(granny, index: 1)!
         let balloon3 = balloonManager.addBalloon(granny, index: 2)!
         let balloon4 = balloonManager.addBalloon(granny, index: 3)!
+        
+        balloon1.zPosition = -1;
+        balloon2.zPosition = -1;
+        balloon3.zPosition = -1;
+        balloon4.zPosition = -1;
  
         addChild(balloon1);
         addChild(balloon2);
@@ -94,7 +100,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             // When we have moved to this scene, let's start updating the score based on the timer
             self.scoreTotalLbl.hidden = false;
             self.timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "updateScoreIncrementally", userInfo: nil, repeats: true)
-            self.timerLevels = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
+            self.timer2 = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
         })
     }
 
@@ -156,17 +162,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
 
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        // Choose one of the touches to work with
         if countDownDone {
+            // Choose one of the touches to work with
             guard let touch = touches.first else {
                 return
             }
             
             let touchLocation = touch.locationInNode(self)
-            
+        
             // Set up initial location of projectile
-            let projectile = RTAMBullet(size: CGSizeMake(5, 5))
-            projectile.position = CGPoint(x: granny.position.x + granny.size.width, y: granny.position.y)
+            let projectile = RTAMBullet(size: CGSizeMake(15, 5))
+            projectile.position = CGPoint(x: granny.position.x + granny.size.width, y: granny.position.y+38)
             projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
             projectile.physicsBody?.dynamic = true
             projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
@@ -192,6 +198,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             // Add the shoot amount to the current position
             let realDest = shootAmount + projectile.position
             
+            self.granny.texture = SKTexture(imageNamed: "granny-muzzle")
+
+            let wait = SKAction.waitForDuration(0.5)
+            let run = SKAction.runBlock {
+                self.granny.texture = SKTexture(imageNamed: "granny")
+            }
+            projectile.runAction(SKAction.sequence([wait, run]))
+            
             // Create the actions
             let actionMove = SKAction.moveTo(realDest, duration: 2.0)
             let actionMoveDone = SKAction.removeFromParent()
@@ -206,14 +220,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     
     func birdDidCollideWithGranny(bird: SKSpriteNode, granny: SKSpriteNode) {
         // Check if all ballons are gone, if they are, run this
-        //let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-        //let gameOverScene = GameOverScene(size: self.size, won: false)
+        let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+        let gameOverScene = GameOverScene(size: self.size, won: false)
         
         // Game over scene
-        //TODO: Once all birds are gone, do this!
-        //self.view?.presentScene(gameOverScene, transition: reveal)
-        if numberOfGrannyHitsLeft > 0 {
+        if (numberOfGrannyHitsLeft==0) {
+            self.view?.presentScene(gameOverScene, transition: reveal)
+        }
+        
+        /*if numberOfGrannyHitsLeft > 0 {
             numberOfGrannyHitsLeft = numberOfGrannyHitsLeft - 1
+
             let removePosition = String(numberOfGrannyHitsLeft)
             let node = self.childNodeWithName(removePosition)
             balloonManager.removeBalloon(Int(removePosition)!)
@@ -222,7 +239,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             if (numberOfGrannyHitsLeft) == 0 {
                 print("game over")
             }
-        }
+        }*/
     }
     
     override func update(currentTime: CFTimeInterval) {
