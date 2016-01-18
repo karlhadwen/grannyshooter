@@ -59,6 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         granny.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
         granny.physicsBody?.collisionBitMask = PhysicsCategory.None;
         granny.position = CGPointMake(60, view.frame.size.height/2);
+       
         addChild(granny)
         
         let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: granny.position);
@@ -174,6 +175,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
             projectile.physicsBody?.usesPreciseCollisionDetection = true
             
+            let y = touchLocation.y - projectile.position.y
+            let x = touchLocation.x - projectile.position.x
+            
+            let angle = atan2(y, x)
+            
+            
             // Determine offset of location to projectile
             let offset = touchLocation - projectile.position
             
@@ -193,9 +200,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let realDest = shootAmount + projectile.position
             
             // Create the actions
-            let actionMove = SKAction.moveTo(realDest, duration: 2.0)
+            let actionMove = SKAction.moveTo(realDest, duration: 0.5)
             let actionMoveDone = SKAction.removeFromParent()
-            projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+            
+            
+            let grannyMove = SKAction.rotateToAngle(angle, duration: 0.03)
+            let grannyMoveBack = SKAction.rotateToAngle(0, duration: 0.03)
+            
+             granny.runAction(SKAction.sequence([grannyMove, grannyMoveBack]))
+       
+             projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+    
+        
         }
     }
     
