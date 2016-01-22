@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="e0V-PF-9xj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="e0V-PF-9xj">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Game View Controller-->
@@ -18,15 +20,50 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btX-cZ-eVz" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1237" y="652"/>
+            <point key="canvasLocation" x="1362" y="688"/>
         </scene>
-        <!--Game Start Controller-->
+        <!--Game Over View Controller-->
+        <scene sceneID="6wB-7B-e57">
+            <objects>
+                <viewController storyboardIdentifier="gameOverController" id="KOo-Zh-AOJ" customClass="GameOverViewController" customModule="Angry_Nan" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="3uG-TZ-xjW"/>
+                        <viewControllerLayoutGuide type="bottom" id="cYE-ka-nMs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mWw-zg-khC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="score-screen" translatesAutoresizingMaskIntoConstraints="NO" id="Udx-HC-rem">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                </accessibility>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Udx-HC-rem" firstAttribute="centerX" secondItem="mWw-zg-khC" secondAttribute="centerX" id="1In-La-dFF"/>
+                            <constraint firstItem="Udx-HC-rem" firstAttribute="centerY" secondItem="mWw-zg-khC" secondAttribute="centerY" id="nAA-CE-GTh"/>
+                            <constraint firstItem="cYE-ka-nMs" firstAttribute="top" secondItem="Udx-HC-rem" secondAttribute="bottom" constant="28" id="oPq-kq-EY2"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Udx-HC-rem" secondAttribute="trailing" constant="-20" id="uiO-iJ-7MW"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v9q-NT-fjA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="574" y="1355"/>
+        </scene>
+        <!--Game Start View Controller-->
         <scene sceneID="cF1-AF-2zW">
             <objects>
-                <viewController id="e0V-PF-9xj" customClass="GameStartController" customModule="Angry_Nan" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="e0V-PF-9xj" customClass="GameStartViewController" customModule="Angry_Nan" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="XbG-fX-nSU"/>
                         <viewControllerLayoutGuide type="bottom" id="vTb-Wg-nU2"/>
@@ -35,36 +72,83 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4eu-Ef-X4x">
-                                <rect key="frame" x="195" y="280" width="32" height="30"/>
-                                <state key="normal">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="home-screen" translatesAutoresizingMaskIntoConstraints="NO" id="fCl-ga-lPA">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                </accessibility>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4eu-Ef-X4x">
+                                <rect key="frame" x="42" y="506" width="130" height="58"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" link="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="58" id="3rp-kx-Q6M"/>
+                                    <constraint firstAttribute="width" secondItem="4eu-Ef-X4x" secondAttribute="height" multiplier="65:29" id="7aa-ES-MpK"/>
+                                    <constraint firstAttribute="width" constant="130" id="vw7-G8-Mi9"/>
+                                </constraints>
+                                <state key="normal" image="rate_button">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="rateButton" destination="e0V-PF-9xj" eventType="touchDown" id="woM-jf-KaV"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bbp-dq-xUy">
-                                <rect key="frame" x="344" y="280" width="87" height="30"/>
-                                <state key="normal">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Rn-Re-7Up">
+                                <rect key="frame" x="200" y="490" width="200" height="90"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="YoX-6S-29W"/>
+                                    <constraint firstAttribute="width" constant="200" id="rGR-np-db9"/>
+                                    <constraint firstAttribute="height" constant="90" id="wMa-ue-XVu"/>
+                                </constraints>
+                                <state key="normal" image="start_button">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <segue destination="LVB-YS-i5n" kind="show" id="EYr-Bz-8eN"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Rn-Re-7Up">
-                                <rect key="frame" x="283" y="280" width="34" height="30"/>
-                                <state key="normal">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bbp-dq-xUy">
+                                <rect key="frame" x="426" y="506" width="130" height="58"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="58" id="5Oi-P8-66R"/>
+                                    <constraint firstAttribute="width" secondItem="bbp-dq-xUy" secondAttribute="height" multiplier="65:29" id="Aja-rl-1k9"/>
+                                    <constraint firstAttribute="width" constant="130" id="GLe-PG-WMH"/>
+                                </constraints>
+                                <state key="normal" image="score_button">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.00083137051919999995" green="0.30751932360000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="centerY" secondItem="bbp-dq-xUy" secondAttribute="centerY" id="1xY-8L-IHJ"/>
+                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="leading" secondItem="4eu-Ef-X4x" secondAttribute="trailing" constant="28" id="FTN-ol-MdP"/>
+                            <constraint firstItem="bbp-dq-xUy" firstAttribute="leading" secondItem="6Rn-Re-7Up" secondAttribute="trailing" constant="26" id="I9W-gs-tZQ"/>
+                            <constraint firstItem="fCl-ga-lPA" firstAttribute="leading" secondItem="iLM-06-clr" secondAttribute="leadingMargin" id="JDd-ik-EDn"/>
+                            <constraint firstItem="fCl-ga-lPA" firstAttribute="bottom" secondItem="vTb-Wg-nU2" secondAttribute="top" id="JGT-rm-w0o"/>
+                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="centerX" secondItem="iLM-06-clr" secondAttribute="centerX" id="clf-98-koW"/>
+                            <constraint firstAttribute="bottom" secondItem="6Rn-Re-7Up" secondAttribute="bottom" constant="20" symbolic="YES" id="eiD-v7-XQw"/>
+                            <constraint firstItem="fCl-ga-lPA" firstAttribute="top" secondItem="XbG-fX-nSU" secondAttribute="bottom" id="gQs-tQ-yTg"/>
+                            <constraint firstItem="fCl-ga-lPA" firstAttribute="centerX" secondItem="6Rn-Re-7Up" secondAttribute="centerX" id="pkD-Ln-7bR"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fCl-ga-lPA" secondAttribute="trailing" id="tHe-pM-1Se"/>
+                            <constraint firstItem="6Rn-Re-7Up" firstAttribute="centerY" secondItem="4eu-Ef-X4x" secondAttribute="centerY" id="txq-Qw-PNB"/>
+                        </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
-                    <connections>
-                        <segue destination="LVB-YS-i5n" kind="show" identifier="startGame" id="MCw-YQ-ulW"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0BE-Z8-6m7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="449" y="652"/>
+            <point key="canvasLocation" x="574" y="688"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="home-screen" width="2000" height="1124"/>
+        <image name="rate_button" width="365" height="163"/>
+        <image name="score-screen" width="2000" height="1124"/>
+        <image name="score_button" width="365" height="163"/>
+        <image name="start_button" width="610" height="272"/>
+    </resources>
 </document>

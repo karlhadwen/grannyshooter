@@ -1,23 +1,18 @@
 import UIKit
 import SpriteKit
 
-class GameViewController: UIViewController {
-    var scene: GameScene!
-    
+class GameOverViewController: UIViewController {
+    //TODO: Get our APP_ID
+    let APP_ID = 0;
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        let skView = self.view as! SKView
-        skView.showsFPS = true;
-        skView.showsNodeCount = true;
-    
-        let myScene = GameScene(size: skView.frame.size)
-        skView.presentScene(myScene)
     }
     
     override func shouldAutorotate() -> Bool {
         return true
     }
-
+    
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             return UIInterfaceOrientationMask.AllButUpsideDown
@@ -25,12 +20,12 @@ class GameViewController: UIViewController {
             return UIInterfaceOrientationMask.All
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-
+    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }

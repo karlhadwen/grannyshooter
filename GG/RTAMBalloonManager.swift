@@ -4,8 +4,7 @@ import UIKit
 
 class RTAMBalloonManager {
     var occupiedPositions = [Int?](count: 4, repeatedValue: nil)
-    // let birdInputLocations: [CGPoint] = [CGPoint(x: 10, y: 20), CGPoint(x: 30, y: 40), CGPoint(x: 50, y: 60)]
-
+    
     init() {}
     
     required init?(coder aDecoder: NSCoder) {
@@ -26,7 +25,6 @@ class RTAMBalloonManager {
         
         if (index == 2) {
             balloon.position = CGPointMake(node.position.x + 45, node.position.y + 25)
-            
         }
         
         if (index == 3) {

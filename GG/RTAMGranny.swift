@@ -7,14 +7,13 @@ class RTAMGranny: SKSpriteNode {
     }
 
     init(size: CGSize) {
-        super.init(texture: SKTexture(imageNamed: "granny"), color: UIColor.blackColor(), size: CGSizeMake(size.width, size.height))
-        self.physicsBody = SKPhysicsBody(rectangleOfSize: self.size)
+        super.init(texture: SKTexture(imageNamed: "granny-ak-4b-no-muzzle"), color: UIColor.blackColor(), size: CGSizeMake(size.width, size.height))
+        self.physicsBody = SKPhysicsBody(circleOfRadius: (self.size.width/2)/1.3)
         self.physicsBody?.dynamic = true
         self.physicsBody?.categoryBitMask = PhysicsCategory.Granny
         self.physicsBody?.contactTestBitMask = PhysicsCategory.Bird
         self.physicsBody?.collisionBitMask = PhysicsCategory.None
-
-        anchorPoint = CGPointMake(0, 0.5)
+        anchorPoint = CGPointMake(0.5, 0.5)
     }
     
     func addGranny() {

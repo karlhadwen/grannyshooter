@@ -61,20 +61,16 @@ class RTAMBirdManager {
         let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureSix = SKTexture(imageNamed:"yellowBirdSix")
-        birdTextureSix.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive, birdTextureSix], timePerFrame:0.2));
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
         
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height/2)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
+        bird.setScale(0.05)
         bird.anchorPoint = CGPointMake(0.5, 0)
-        bird.name = "normal-bird"
         
         // Selecting random y position for bird
         let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.height - bird.size.height)))
@@ -132,7 +128,7 @@ class RTAMBirdManager {
         let birdTextureFive = SKTexture(imageNamed:"greenBirdFive")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
-        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.2));
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
 
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
@@ -140,7 +136,7 @@ class RTAMBirdManager {
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
+        bird.setScale(0.05)
         bird.anchorPoint = CGPointMake(0.5, 0)
         bird.name = "top-bird"
         
@@ -190,10 +186,7 @@ class RTAMBirdManager {
         let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureSix = SKTexture(imageNamed:"yellowBirdSix")
-        birdTextureSix.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive, birdTextureSix], timePerFrame:0.2));
+        let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
 
         bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
@@ -201,7 +194,7 @@ class RTAMBirdManager {
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.04)
+        bird.setScale(0.05)
         bird.anchorPoint = CGPointMake(0.5, 0)
         bird.name = "bottom-bird"
         
@@ -246,11 +239,7 @@ class RTAMBirdManager {
             return nil;
         }
     }
-    
-    func randomiseBirdInputLocation() {
-        
-    }
-    
+
     func removeBird(index: Int) {
         self.birds.removeAtIndex(index)
     }
