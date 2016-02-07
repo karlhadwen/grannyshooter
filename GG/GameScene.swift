@@ -1,4 +1,5 @@
 import SpriteKit
+import AVFoundation
 
 struct PhysicsCategory {
     static let None: UInt32 = 0
@@ -6,33 +7,41 @@ struct PhysicsCategory {
     static let Bird: UInt32 = 0b001
     static let Projectile: UInt32 = 0b010
     static let Granny: UInt32 = 0b011
+    static let littleDot: UInt32 = 0b111
 }
 
 let π = CGFloat(M_PI)
 
 extension SKAction {
-    // amplitude  - the amount the height will vary by, set this to 200 in your case.
-    // timePeriod - the time it takes for one complete cycle
-    // midPoint   - the point around which the oscillation occurs.
     static func oscillation(amplitude a: CGFloat, timePeriod t: Double, midPoint: CGPoint) -> SKAction {
         let action = SKAction.customActionWithDuration(t) { node, currentTime in
             let displacement = a * sin(2 * π * currentTime / CGFloat(t))
             node.position.y = midPoint.y + displacement
         }
-        
         return action
     }
 }
 
+@objc protocol GameOverDelegate {
+    func gameOverDelegateFunc()
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate  {
-    var background = SKSpriteNode(imageNamed: "bg");
+    var gamescene_delegate : GameOverDelegate?
     var viewController: GameViewController!
+    var audioPlayerAK47: AVAudioPlayer?
+    var audioPlayerRpg: AVAudioPlayer?
+    var audioPlayerBirdPop: AVAudioPlayer?
+    var shootingTimer: NSTimer!
+    var background = SKSpriteNode(imageNamed: "bg");
     
     var timerLevels = NSTimer();
     var countDownTimer = NSTimer();
+    var rpgTimer = NSTimer();
     
-    var countDownLabel = SKLabelNode(fontNamed:"Tahoma");
-    var scoreTotalLbl = SKLabelNode(fontNamed:"Tahoma");
+    let bulletPos = SKSpriteNode(imageNamed: "bullet-spot")
+    var countDownLabel = SKLabelNode(fontNamed: "Bangers-Regular");
+    var scoreTotalLbl = SKLabelNode(fontNamed: "Bangers-Regular");
     var countDownDone: Bool = false;
     var counter: Int = 3;
     var lastBirdAdded : NSTimeInterval = 0.0;
@@ -48,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var isRpgSelected = false;
     var hasRpgBeenShot = false;
     var numberOfBalloonsLeft = 4;
-    var numberOfRpgShotsLeft = 10;
+    var numberOfRpgShotsLeft = 5;
     
     var grannyWithoutMuzzles  = ["granny-ak-0b-no-muzzle", "granny-ak-1b-no-muzzle", "granny-ak-2b-no-muzzle", "granny-ak-3b-no-muzzle"];
     var grannyWithMuzzles = ["granny-ak-0b-with-muzzle", "granny-ak-1b-with-muzzle", "granny-ak-2b-with-muzzle", "granny-ak-3b-with-muzzle"];
@@ -59,57 +68,76 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var grannyImageNoBackfire = "granny-rpg-4b-no-backfire";
     var grannyImageWithBackfire = "granny-rpg-4b-with-backfire";
     
+    let useRpg = SKSpriteNode(texture: SKTexture(imageNamed: "bazooka"), size: CGSizeMake(75, 75))
+    
     override func didMoveToView(view: SKView) {
-        background.position = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
-        background.size = self.frame.size
+        if let playAK47 = self.setupAudioPlayerWithFile("ak47", type: "mp3") {
+            self.audioPlayerAK47 = playAK47
+        }
+        if let playRpg = self.setupAudioPlayerWithFile("rpg", type: "mp3") {
+            self.audioPlayerRpg = playRpg
+        }
+        
+        self.background.position = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
+        self.background.size = self.frame.size
         self.scaleMode = SKSceneScaleMode.ResizeFill
-        self.addChild(background)
+        self.addChild(self.background)
         
-        self.scoreTotalLbl.fontSize = 40;
-        self.countDownLabel.fontSize = 65;
-        self.scoreTotalLbl.name = "Button"
-        self.scoreTotalLbl.position = CGPoint(x: self.frame.size.width - self.frame.size.width * 0.90, y: self.frame.size.height - self.frame.size.height * 0.90);
-        self.scoreTotalLbl.text = String(self.score);
-        self.scoreTotalLbl.hidden = true;
-        self.addChild(self.scoreTotalLbl);
+        self.granny.physicsBody = SKPhysicsBody(rectangleOfSize: self.granny.size);
+        self.granny.physicsBody?.dynamic = true;
+        self.granny.physicsBody?.categoryBitMask = PhysicsCategory.Granny;
+        self.granny.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
+        self.granny.physicsBody?.collisionBitMask = PhysicsCategory.None;
+        self.granny.position = CGPointMake(125, view.frame.size.height/2);
+        self.granny.zPosition = 1;
+        self.addChild(self.granny)
         
-        // Position me at half way point of the height (not divide!!)
-        granny.physicsBody = SKPhysicsBody(rectangleOfSize: granny.size);
-        granny.physicsBody?.dynamic = true;
-        granny.physicsBody?.categoryBitMask = PhysicsCategory.Granny;
-        granny.physicsBody?.contactTestBitMask = PhysicsCategory.Bird;
-        granny.physicsBody?.collisionBitMask = PhysicsCategory.None;
-        granny.position = CGPointMake(125, view.frame.size.height/2);
-        granny.zPosition = 1;
-        addChild(granny)
+        self.bulletPos.physicsBody = SKPhysicsBody(rectangleOfSize: self.bulletPos.size);
+        self.bulletPos.physicsBody?.dynamic = true;
+        self.bulletPos.physicsBody?.categoryBitMask = PhysicsCategory.littleDot;
+        self.bulletPos.physicsBody?.contactTestBitMask = PhysicsCategory.None;
+        self.bulletPos.physicsBody?.collisionBitMask = PhysicsCategory.None;
+        self.bulletPos.position = CGPoint(x: self.granny.position.x + (self.granny.size.width * 0.44146), y: self.granny.position.y + (0.0163 * self.granny.size.height))
+        self.addChild(self.bulletPos)
         
-        let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: granny.position);
-        granny.runAction(SKAction.repeatActionForever(oscillate));
-        
-        let useRpg = SKSpriteNode(texture: SKTexture(imageNamed: "bazooka"), size: CGSizeMake(75, 75))
-        useRpg.position = CGPointMake(self.frame.size.width-self.frame.size.width*0.15, 20)
-        useRpg.anchorPoint = CGPointMake(0,0)
-        useRpg.name = "bazooka"
-        self.addChild(useRpg)
-        
-        physicsWorld.gravity = CGVectorMake(0, 0)
-        physicsWorld.contactDelegate = self
-        
-        countDownLabel.position = CGPointMake(self.frame.size.width/2, self.frame.size.height/2)
-        countDownLabel.text = String(counter)
-        countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.4, target:self, selector: Selector("updateCounter"), userInfo: nil, repeats: true)
-        addChild(countDownLabel)
+        let joint = SKPhysicsJointFixed.jointWithBodyA(self.granny.physicsBody!, bodyB: self.bulletPos.physicsBody!, anchor: self.granny.anchorPoint)
         
         // Making self delegate of physics world
         self.physicsWorld.gravity = CGVectorMake(0, 0)
         self.physicsWorld.contactDelegate = self
-
+        self.physicsWorld.addJoint(joint)
+        
+        let oscillate = SKAction.oscillation(amplitude: 22, timePeriod: 2, midPoint: self.granny.position);
+        self.granny.runAction(SKAction.repeatActionForever(oscillate));
+        
+        self.scoreTotalLbl.fontSize = 40;
+        self.countDownLabel.fontSize = 65;
+        self.scoreTotalLbl.name = "Button"
+        self.scoreTotalLbl.position = CGPoint(x: self.frame.size.width - self.frame.size.width * 0.90, y: self.frame.size.height - self.frame.size.height * 0.92);
+        self.scoreTotalLbl.text = String(self.score);
+        self.scoreTotalLbl.hidden = true;
+        self.addChild(self.scoreTotalLbl);
+        
+        self.useRpg.position = CGPointMake(self.frame.size.width-self.frame.size.width*0.15, 20)
+        self.useRpg.anchorPoint = CGPointMake(0,0)
+        self.useRpg.name = "bazooka"
+        self.useRpg.zPosition = 10
+        self.addChild(self.useRpg)
+        
+        self.physicsWorld.gravity = CGVectorMake(0, 0)
+        self.physicsWorld.contactDelegate = self
+        
+        self.scoreTotalLbl.hidden = true;
         let seconds = 4.2
         let delay = seconds * Double(NSEC_PER_SEC)  // nanoseconds per seconds
         let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
         
+        self.countDownLabel.position = CGPointMake(self.frame.size.width/2, self.frame.size.height/2)
+        self.countDownLabel.text = String(self.counter)
+        self.countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.5, target:self, selector: Selector("updateCounter"), userInfo: nil, repeats: true)
+        self.addChild(self.countDownLabel)
+        
         dispatch_after(dispatchTime, dispatch_get_main_queue(), {
-            // When we have moved to this scene, let's start updating the score based on the timer
             self.scoreTotalLbl.hidden = false;
             self.timerLevels = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
         })
@@ -170,6 +198,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         }
     }
 
+    func setupAudioPlayerWithFile(file: NSString, type: NSString) -> AVAudioPlayer? {
+        let path = NSBundle.mainBundle().pathForResource(file as String, ofType: type as String)
+        let url = NSURL.fileURLWithPath(path!)
+        var audioPlayer: AVAudioPlayer?
+        
+        if path != nil {
+            do {
+                try audioPlayer = AVAudioPlayer(contentsOfURL: url)
+            } catch {
+                print("Player not available")
+            }
+        }
+        
+        return audioPlayer
+    }
+    
+    func playShootingSoundAK47() {
+        audioPlayerAK47?.play()
+    }
+    
+    func playShootingSoundRpg() {
+        audioPlayerRpg?.play()
+    }
+    
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if countDownDone {
             // Choose one of the touches to work with
@@ -180,7 +232,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let touchLocation = touch.locationInNode(self)
         
             // Set up initial location of projectile
-            let projectile = RTAMBullet(size: CGSizeMake(15, 5))
+            let projectile = RTAMBullet(size: CGSizeMake(13, 5))
             
             let grannyWithBackfire = SKTexture(imageNamed: self.grannyImageWithBackfire)
             let grannyNoBackfire = SKTexture(imageNamed: self.grannyImageNoBackfire)
@@ -189,16 +241,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             var grannyInUseNotShooting = SKTexture()
             var grannyInUseShooting = SKTexture()
             
-            if ((self.nodeAtPoint(touchLocation).name == "bazooka") && (self.numberOfRpgShotsLeft > 0)) {
+            if ((self.nodeAtPoint(touchLocation).name == "bazooka") && (self.numberOfRpgShotsLeft > 0) && (isRpgSelected == false) && useRpg.alpha == 1) {
                 isRpgSelected = true
                 hasRpgBeenShot = false
                 projectile.texture = SKTexture(imageNamed: "rocket")
                 granny.texture = grannyNoBackfire
                 grannyInUseShooting = grannyWithBackfire
                 grannyInUseNotShooting = grannyNoBackfire
-                
+                useRpg.alpha = 0.5
+                return
             } else if ((isRpgSelected == true) && (hasRpgBeenShot == false)) {
                 projectile.texture = SKTexture(imageNamed: "rocket")
+                projectile.name = "rocket"
                 
                 let pause = SKAction.waitForDuration(0.5)
                 let changeToAk = SKAction.runBlock {
@@ -212,16 +266,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
                 hasRpgBeenShot = true
                 isRpgSelected = false
                 self.numberOfRpgShotsLeft = self.numberOfRpgShotsLeft - 1
+                let waitForAlpha = SKAction.waitForDuration(8)
+                let changeAlphaBack = SKAction.runBlock{self.useRpg.alpha = 1}
+                useRpg.runAction(SKAction.sequence([waitForAlpha, changeAlphaBack]))
+                shootingTimer = NSTimer.scheduledTimerWithTimeInterval(0.19, target: self, selector: Selector("playShootingSoundRpg"), userInfo: nil, repeats: false)
             } else {
                 projectile.texture = SKTexture(imageNamed: "bullet")
+                projectile.name = "bullet"
                 granny.texture = grannyNoMuzzle
                 grannyInUseNotShooting = grannyNoMuzzle
                 grannyInUseShooting = grannyWithMuzzle
                 hasRpgBeenShot = true
+                shootingTimer = NSTimer.scheduledTimerWithTimeInterval(0.19, target: self, selector: Selector("playShootingSoundAK47"), userInfo: nil, repeats: false)
             }
             
-            projectile.position = CGPoint(x: granny.position.x + (granny.size.width * 0.44146), y: granny.position.y + (0.0163 * granny.size.height))
-            projectile.position = CGPoint(x: granny.position.x + granny.size.width, y: granny.position.y+38)
+            projectile.position = bulletPos.position
             projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
             projectile.physicsBody?.dynamic = true
             projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
@@ -246,7 +305,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let direction = offset.normalized()
             
             // Make it shoot far enough to be guaranteed off screen
-            let shootAmount = direction * 1000
+            let shootAmount = direction * 800
             
             // Add the shoot amount to the current position
             let realDest = shootAmount + projectile.position
@@ -267,7 +326,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let grannyMoveBack = SKAction.rotateToAngle(0, duration: 0.5)
             
             let projPos = SKAction.moveTo(granny.position, duration: 0.0)
-            projectile.runAction(SKAction.sequence([ projectileTilt,projPos, actionMove, actionMoveDone]))
+            projectile.runAction(SKAction.sequence([projectileTilt, projPos, actionMove, actionMoveDone]))
             
             granny.runAction(SKAction.sequence([grannyMove, grannyMoveBack]))
             projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
@@ -275,68 +334,87 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
     
     func projectileDidCollideWithMonster(bird: SKSpriteNode, bullet: SKSpriteNode) {
+        if (bullet.name == "rocket") {
+            for (var i = 0; i < birdManager.birds.count ; i++) {
+                let birdInLoop = birdManager.birds[i]
+                var explodeImage = ""
+                
+                if (birdInLoop?.name == "top-bird") {
+                    explodeImage = "green-bird-explode-last"
+                } else if (birdInLoop?.name == "straight-bird") {
+                    explodeImage = "yellow-bird-explode-last"
+                } else if (birdInLoop?.name == "bottom-bird") {
+                    explodeImage = "yellow-bird-explode-last"
+                }
+                
+                let birdExplode = SKTexture(imageNamed: explodeImage)
+                birdExplode.filteringMode = SKTextureFilteringMode.Nearest
+                
+                let explode = SKAction.animateWithTextures([birdExplode], timePerFrame: 0.1);
+                let removeBird = SKAction.removeFromParent()
+                
+                birdInLoop?.runAction(SKAction.sequence([explode, removeBird]))
+            }
+        } else {
+            var explodeImage = ""
+            
+            if (bird.name == "top-bird") {
+                explodeImage = "green-bird-explode-last"
+            } else if (bird.name == "straight-bird") {
+                explodeImage = "yellow-bird-explode-last"
+            } else if (bird.name == "bottom-bird") {
+                explodeImage = "yellow-bird-explode-last"
+            }
+            
+            let birdExplode = SKTexture(imageNamed: explodeImage)
+            birdExplode.filteringMode = SKTextureFilteringMode.Nearest
+            
+            let explode = SKAction.animateWithTextures([birdExplode], timePerFrame: 0.1);
+            let removeBird = SKAction.removeFromParent()
+            
+            bird.runAction(SKAction.sequence([explode, removeBird]))
+        }
+        
         bullet.removeFromParent()
-        
-        let birdExplodeOne = SKTexture(imageNamed:"yellow-bird-explode-one")
-        birdExplodeOne.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let birdExplodeTwo = SKTexture(imageNamed:"yellow-bird-explode-two")
-        birdExplodeTwo.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let birdExplodeThree = SKTexture(imageNamed:"yellow-bird-explode-three")
-        birdExplodeThree.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let birdExplodeFour = SKTexture(imageNamed:"yellow-bird-explode-four")
-        birdExplodeFour.filteringMode = SKTextureFilteringMode.Nearest
-        
-        let explode = SKAction.animateWithTextures([birdExplodeOne, birdExplodeTwo, birdExplodeThree, birdExplodeFour], timePerFrame:0.05);
-        let removeBird = SKAction.removeFromParent()
-        
         updateScore()
-        bird.runAction(SKAction.sequence([explode, removeBird]))
     }
     
     func birdDidCollideWithGranny(bird: SKSpriteNode, granny: SKSpriteNode) {
-        if numberOfGrannyHitsLeft > 0 {
-            numberOfGrannyHitsLeft = numberOfGrannyHitsLeft - 1
-            numberOfBalloonsLeft  = numberOfBalloonsLeft - 1
-            grannyImageNoMuzzle = grannyWithoutMuzzles[numberOfBalloonsLeft]
-            grannyImageWithMuzzle = grannyWithMuzzles[numberOfBalloonsLeft]
-            grannyImageNoBackfire = grannyWithoutBackfires[numberOfBalloonsLeft]
-            grannyImageWithBackfire = grannyWithBackfires[numberOfBalloonsLeft]
+        if self.numberOfGrannyHitsLeft > 0 {
+            self.numberOfGrannyHitsLeft = self.numberOfGrannyHitsLeft - 1
+            self.numberOfBalloonsLeft  = self.numberOfBalloonsLeft - 1
+            self.grannyImageNoMuzzle = self.grannyWithoutMuzzles[self.numberOfBalloonsLeft]
+            self.grannyImageWithMuzzle = self.grannyWithMuzzles[self.numberOfBalloonsLeft]
+            self.grannyImageNoBackfire = self.grannyWithoutBackfires[self.numberOfBalloonsLeft]
+            self.grannyImageWithBackfire = self.grannyWithBackfires[self.numberOfBalloonsLeft]
             
-            if (isRpgSelected) {
-                self.granny.texture = SKTexture(imageNamed: grannyImageNoBackfire)
+            if (self.isRpgSelected) {
+                self.granny.texture = SKTexture(imageNamed: self.grannyImageNoBackfire)
             } else {
-                self.granny.texture = SKTexture(imageNamed: grannyImageNoMuzzle)
+                self.granny.texture = SKTexture(imageNamed: self.grannyImageNoMuzzle)
             }
             
             bird.removeFromParent()
             
-            if (numberOfGrannyHitsLeft) == 0 {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let gameOverScene = GameOverScene(size: self.size)
-                    let transition = SKTransition.flipVerticalWithDuration(2.0)
-                    gameOverScene.scaleMode = SKSceneScaleMode.AspectFill
-                    self.scene!.view?.presentScene(gameOverScene, transition: transition)
-                })
+            if (self.numberOfGrannyHitsLeft) == 0 {
+                gamescene_delegate?.gameOverDelegateFunc()
             }
         }
     }
     
     override func update(currentTime: CFTimeInterval) {
-        if countDownDone {
+        if self.countDownDone {
             if currentTime - self.lastBirdAdded > 0.6 {
                 self.lastBirdAdded = currentTime + 0.6
                 
-                let bird = birdManager.addBird(self)!
-                addChild(bird)
+                let bird = self.birdManager.addBird(self)!
+                self.addChild(bird)
                 
-                let topBird = birdManager.addBirdFromBottom(self)!
-                addChild(topBird)
+                let topBird = self.birdManager.addBirdFromTop(self)!
+                self.addChild(topBird)
                 
-                let bottomBird = birdManager.addBirdFromTop(self)!
-                addChild(bottomBird)
+                let bottomBird = self.birdManager.addBirdFromBottom(self)!
+                self.addChild(bottomBird)
             }
         }
     }

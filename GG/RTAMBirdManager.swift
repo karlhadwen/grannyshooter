@@ -46,31 +46,32 @@ class RTAMBirdManager {
     }
     
     func addBird(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"yellowBirdOne")
+        let birdTextureOne = SKTexture(imageNamed:"yellow-bird-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"yellowBirdTwo")
+        let birdTextureTwo = SKTexture(imageNamed:"yellow-bird-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"yellowBirdThree")
+        let birdTextureThree = SKTexture(imageNamed:"yellow-bird-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"yellowBirdFour")
+        let birdTextureFour = SKTexture(imageNamed:"yellow-bird-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
+        let birdTextureFive = SKTexture(imageNamed:"yellow-bird-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
         
-        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height/2)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.width/2)
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.05)
-        bird.anchorPoint = CGPointMake(0.5, 0)
+        bird.setScale(0.50)
+        bird.anchorPoint = CGPointMake(0.5, 0.5)
+        bird.name = "straight-bird"
         
         // Selecting random y position for bird
         let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.height - bird.size.height)))
@@ -113,31 +114,31 @@ class RTAMBirdManager {
     }
     
     func addBirdFromTop(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"greenBirdOne")
+        let birdTextureOne = SKTexture(imageNamed:"green-bird-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"greenBirdTwo")
+        let birdTextureTwo = SKTexture(imageNamed:"green-bird-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"greenBirdThird")
+        let birdTextureThree = SKTexture(imageNamed:"green-bird-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"greenBirdFour")
+        let birdTextureFour = SKTexture(imageNamed:"green-bird-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"greenBirdFive")
+        let birdTextureFive = SKTexture(imageNamed:"green-bird-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
 
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: (bird.size.width/2))
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.05)
-        bird.anchorPoint = CGPointMake(0.5, 0)
+        bird.setScale(0.50)
+        bird.anchorPoint = CGPointMake(0.5, 0.5)
         bird.name = "top-bird"
         
         // Selecting random y position for bird
@@ -171,31 +172,31 @@ class RTAMBirdManager {
     }
     
     func addBirdFromBottom(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"yellowBirdOne")
+        let birdTextureOne = SKTexture(imageNamed:"yellow-bird-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"yellowBirdTwo")
+        let birdTextureTwo = SKTexture(imageNamed:"yellow-bird-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"yellowBirdThree")
+        let birdTextureThree = SKTexture(imageNamed:"yellow-bird-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"yellowBirdFour")
+        let birdTextureFour = SKTexture(imageNamed:"yellow-bird-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"yellowBirdFive")
+        let birdTextureFive = SKTexture(imageNamed:"yellow-bird-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
 
-        bird.physicsBody = SKPhysicsBody(rectangleOfSize: bird.size)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: (bird.size.width/2))
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
-        bird.setScale(0.05)
-        bird.anchorPoint = CGPointMake(0.5, 0)
+        bird.setScale(0.50)
+        bird.anchorPoint = CGPointMake(0.5, 0.5)
         bird.name = "bottom-bird"
         
         // Selecting random y position for bird

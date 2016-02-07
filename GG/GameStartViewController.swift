@@ -1,9 +1,9 @@
 import UIKit
 import SpriteKit
+import GameKit
 
-class GameStartViewController: UIViewController {
-    //TODO: Get our APP_ID
-    let APP_ID = 0;
+class GameStartViewController: UIViewController, GKGameCenterControllerDelegate {
+    let APP_ID = 1081143952;
     
     @IBAction func rateButton() {
         rateApp()
@@ -11,13 +11,38 @@ class GameStartViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let skView = self.view as! SKView
-        
-        let myScene = GameScene(size: skView.frame.size)
-        skView.presentScene(myScene)
+        authenticateLocalPlayer()
     }
     
+    func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func authenticateLocalPlayer() {
+        var localPlayer = GKLocalPlayer()
+        localPlayer.authenticateHandler = {(viewController, error) -> Void in
+            
+            if (viewController != nil && !localPlayer.authenticated) {
+                let vc: UIViewController = self.view!.window!.rootViewController!
+                vc.presentViewController(viewController!, animated: true, completion: nil)
+            }
+            else {
+                print((localPlayer.authenticated))
+            }
+        }
+    }
+    
+    @IBAction func scoreButton() {
+        showLeaderboardScreen()
+    }
+    
+    func showLeaderboardScreen() {
+        let vc = self.view?.window?.rootViewController
+        let gc = GKGameCenterViewController()
+        gc.gameCenterDelegate = self
+        vc?.presentViewController(gc, animated: true, completion: nil)
+    }
+
     func rateApp() {
         UIApplication.sharedApplication().openURL(NSURL(string : "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=\(APP_ID)&onlyLatestVersion=true&pageNumber=0&sortOrdering=1)")!);
     }

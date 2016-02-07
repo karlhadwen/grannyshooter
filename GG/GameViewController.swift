@@ -1,17 +1,17 @@
 import UIKit
 import SpriteKit
 
-class GameViewController: UIViewController {
-    var scene: GameScene!
-    
+class GameViewController: UIViewController, GameOverDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         let skView = self.view as! SKView
-        skView.showsFPS = true;
-        skView.showsNodeCount = true;
-    
         let myScene = GameScene(size: skView.frame.size)
+        myScene.gamescene_delegate = self
         skView.presentScene(myScene)
+    }
+    
+    func gameOverDelegateFunc() {
+        self.performSegueWithIdentifier("showGameOver", sender: nil)
     }
     
     override func shouldAutorotate() -> Bool {
