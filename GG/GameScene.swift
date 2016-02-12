@@ -39,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var countDownTimer = NSTimer();
     var rpgTimer = NSTimer();
     
+    var grannyInUseShooting = SKTexture()
     let bulletPos = SKSpriteNode(imageNamed: "bullet-spot")
     var countDownLabel = SKLabelNode(fontNamed: "Bangers-Regular");
     var scoreTotalLbl = SKLabelNode(fontNamed: "Bangers-Regular");
@@ -239,7 +240,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let grannyWithMuzzle = SKTexture(imageNamed: self.grannyImageWithMuzzle)
             let grannyNoMuzzle = SKTexture(imageNamed: self.grannyImageNoMuzzle)
             var grannyInUseNotShooting = SKTexture()
-            var grannyInUseShooting = SKTexture()
+            
             
             if ((self.nodeAtPoint(touchLocation).name == "bazooka") && (self.numberOfRpgShotsLeft > 0) && (isRpgSelected == false) && useRpg.alpha == 1) {
                 isRpgSelected = true
@@ -254,7 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
                 projectile.texture = SKTexture(imageNamed: "rocket")
                 projectile.name = "rocket"
                 
-                let pause = SKAction.waitForDuration(0.5)
+                let pause = SKAction.waitForDuration(2.0)
                 let changeToAk = SKAction.runBlock {
                     self.granny.texture = grannyNoMuzzle
                 }
@@ -265,6 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
                 
                 hasRpgBeenShot = true
                 isRpgSelected = false
+                
                 self.numberOfRpgShotsLeft = self.numberOfRpgShotsLeft - 1
                 let waitForAlpha = SKAction.waitForDuration(8)
                 let changeAlphaBack = SKAction.runBlock{self.useRpg.alpha = 1}
@@ -316,7 +318,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let run = SKAction.runBlock {
                 self.granny.texture = grannyInUseNotShooting
             }
-            granny.runAction(SKAction.sequence([wait, run]))
+            self.granny.runAction(SKAction.sequence([wait, run]))
             
             // Create the actions
             let actionMove = SKAction.moveTo(realDest, duration: 2.0)
@@ -373,10 +375,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             let removeBird = SKAction.removeFromParent()
             
             bird.runAction(SKAction.sequence([explode, removeBird]))
+            updateScore()
         }
         
         bullet.removeFromParent()
-        updateScore()
+        
     }
     
     func birdDidCollideWithGranny(bird: SKSpriteNode, granny: SKSpriteNode) {
@@ -397,6 +400,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             bird.removeFromParent()
             
             if (self.numberOfGrannyHitsLeft) == 0 {
+                mainInstance.score = self.score
                 gamescene_delegate?.gameOverDelegateFunc()
             }
         }

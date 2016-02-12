@@ -25,15 +25,10 @@ class GameStartViewController: UIViewController, GKGameCenterControllerDelegate 
             if (viewController != nil && !localPlayer.authenticated) {
                 let vc: UIViewController = self.view!.window!.rootViewController!
                 vc.presentViewController(viewController!, animated: true, completion: nil)
-            }
-            else {
+            } else {
                 print((localPlayer.authenticated))
             }
         }
-    }
-    
-    @IBAction func scoreButton() {
-        showLeaderboardScreen()
     }
     
     func showLeaderboardScreen() {
@@ -41,6 +36,10 @@ class GameStartViewController: UIViewController, GKGameCenterControllerDelegate 
         let gc = GKGameCenterViewController()
         gc.gameCenterDelegate = self
         vc?.presentViewController(gc, animated: true, completion: nil)
+    }
+    
+    @IBAction func scoreButton() {
+        showLeaderboardScreen()
     }
 
     func rateApp() {

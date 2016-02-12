@@ -5,13 +5,83 @@ import GameKit
 class GameOverViewController: UIViewController, GKGameCenterControllerDelegate {
     let APP_ID = 1081143952;
     
+    var viewController: GameOverViewController!
+    
+    @IBOutlet weak var scoreLbl: UILabel!
+    @IBOutlet weak var bestScoreLbl: UILabel!
+    @IBOutlet var scoreConst: NSLayoutConstraint!
+    @IBOutlet var buttonsConst: NSLayoutConstraint!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        saveHighscore(24)
+        changeConstraintForScoresBasedOnScreenSize()
+        var scoreStr = String(mainInstance.score)
+        scoreLbl.text = scoreStr
+        saveHighscore(mainInstance.score)
+        checkAndSaveBestScore()
+        bestScoreLbl.text = String(highScore())
     }
     
-    @IBAction func rateAppShow() {
+    @IBAction func rateAppBtn(sender: AnyObject) {
         rateApp()
+    }
+    
+    @IBAction func replayGameLbl(sender: AnyObject) {
+        self.performSegueWithIdentifier("showGame", sender: nil)
+    }
+    
+    @IBAction func scoreboardLbl(sender: AnyObject) {
+        saveHighscore(mainInstance.score)
+        showLeaderboardScreen()
+    }
+    
+    func changeConstraintForScoresBasedOnScreenSize() {
+        if UIDevice().userInterfaceIdiom == .Phone {
+            switch UIScreen.mainScreen().nativeBounds.height {
+            case 960:
+                //print("iPhone 4 or 4S")
+                self.scoreConst.constant=63
+                self.buttonsConst.constant=5
+            case 1136:
+                //print("iPhone 5 or 5S or 5C")
+                self.scoreConst.constant=65
+                self.buttonsConst.constant=5
+            case 1334:
+                //print("iPhone 6 or 6S")
+                self.scoreConst.constant=84
+            //case 2208:
+                //print("iPhone 6+ or 6S+")
+            default:
+                self.scoreConst.constant=81
+            }
+        }
+    }
+    
+    func saveHighScore(high:Int) {
+        NSUserDefaults.standardUserDefaults().setInteger(high, forKey: "highscore")
+    }
+    
+    func highScore() -> Int {
+        return NSUserDefaults.standardUserDefaults().integerForKey("highscore")
+    }
+    
+    func resetHighScore() {
+        NSUserDefaults.standardUserDefaults().removeObjectForKey("highscore")
+    }
+    
+    func checkAndSaveBestScore() {
+        if mainInstance.score > highScore() {
+            saveHighScore(mainInstance.score)
+            print("New Highscore = " + highScore().description)
+        } else {
+            print("HighScore = " + highScore().description)
+        }
+        
+        if mainInstance.score > highScore() {
+            saveHighScore(mainInstance.score)
+        } else {
+            print("HighScore = " + highScore().description)
+        }
     }
     
     func rateApp() {
@@ -39,10 +109,10 @@ class GameOverViewController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     func showLeaderboardScreen() {
-        let vc = self.view?.window?.rootViewController
+        let vc = self
         let gc = GKGameCenterViewController()
         gc.gameCenterDelegate = self
-        vc?.presentViewController(gc, animated: true, completion: nil)
+        vc.presentViewController(gc, animated: true, completion: nil)
     }
     
     func authenticateLocalPlayer() {

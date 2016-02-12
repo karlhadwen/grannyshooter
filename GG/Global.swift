@@ -6,7 +6,8 @@ class Main {
     let obstacleCategory = 0x1 << 2
     var actionMoveUp = SKAction()
     var actionMoveDown = SKAction()
-    var name:String
+    var name: String
+    var score: Int = 0;
     
     init(name:String) {
         self.name = name
