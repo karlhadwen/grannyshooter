@@ -45,4 +45,3 @@ class RTAMBalloonManager {
         self.occupiedPositions[index] = nil
     }
 }
-

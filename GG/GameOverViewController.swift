@@ -1,10 +1,10 @@
 import UIKit
 import SpriteKit
 import GameKit
+import iAd
 
-class GameOverViewController: UIViewController, GKGameCenterControllerDelegate {
+class GameOverViewController: UIViewController, GKGameCenterControllerDelegate, ADBannerViewDelegate  {
     let APP_ID = 1081143952;
-    
     var viewController: GameOverViewController!
     
     @IBOutlet weak var scoreLbl: UILabel!
@@ -14,6 +14,7 @@ class GameOverViewController: UIViewController, GKGameCenterControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         changeConstraintForScoresBasedOnScreenSize()
         var scoreStr = String(mainInstance.score)
         scoreLbl.text = scoreStr
@@ -72,15 +73,15 @@ class GameOverViewController: UIViewController, GKGameCenterControllerDelegate {
     func checkAndSaveBestScore() {
         if mainInstance.score > highScore() {
             saveHighScore(mainInstance.score)
-            print("New Highscore = " + highScore().description)
+            //print("New Highscore = " + highScore().description)
         } else {
-            print("HighScore = " + highScore().description)
+            //print("HighScore = " + highScore().description)
         }
         
         if mainInstance.score > highScore() {
             saveHighScore(mainInstance.score)
         } else {
-            print("HighScore = " + highScore().description)
+            //print("HighScore = " + highScore().description)
         }
     }
     

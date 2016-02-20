@@ -1,9 +1,11 @@
 import UIKit
 import SpriteKit
 import GameKit
+import iAd
 
-class GameStartViewController: UIViewController, GKGameCenterControllerDelegate {
+class GameStartViewController: UIViewController, GKGameCenterControllerDelegate, ADBannerViewDelegate {
     let APP_ID = 1081143952;
+    var bannerView: ADBannerView!
     
     @IBAction func rateButton() {
         rateApp()
@@ -12,6 +14,24 @@ class GameStartViewController: UIViewController, GKGameCenterControllerDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         authenticateLocalPlayer()
+        
+        bannerView = ADBannerView(adType: .Banner)
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        bannerView.delegate = self
+        bannerView.hidden = true
+        view.addSubview(bannerView)
+        
+        let viewsDictionary = ["bannerView": bannerView]
+        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
+        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
+    }
+    
+    func bannerViewDidLoadAd(banner: ADBannerView!) {
+        bannerView.hidden = false
+    }
+    
+    func bannerView(banner: ADBannerView!, didFailToReceiveAdWithError error: NSError!) {
+        bannerView.hidden = true
     }
     
     func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController) {

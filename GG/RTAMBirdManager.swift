@@ -38,46 +38,46 @@ class RTAMBirdManager {
     var birds = [SKSpriteNode?]()
     let birdInputLocations: [CGPoint] = [CGPoint(x: 10, y: 20), CGPoint(x: 30, y: 40), CGPoint(x: 50, y: 60)]
     var durationOfFlight = 30.0
-
+    
     init() {}
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func addBird(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"yellow-bird-one")
+    func addBird(gameScene: SKScene, birdName: String) -> SKSpriteNode? {
+        let birdTextureOne = SKTexture(imageNamed:birdName + "-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"yellow-bird-two")
+        let birdTextureTwo = SKTexture(imageNamed:birdName + "-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"yellow-bird-three")
+        let birdTextureThree = SKTexture(imageNamed:birdName + "-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"yellow-bird-four")
+        let birdTextureFour = SKTexture(imageNamed:birdName + "-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"yellow-bird-five")
+        let birdTextureFive = SKTexture(imageNamed:birdName + "-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
         
-        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.width/2)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: (bird.size.width/2))
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
         bird.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
         bird.setScale(0.50)
         bird.anchorPoint = CGPointMake(0.5, 0.5)
-        bird.name = "straight-bird"
+        bird.name = birdName
         
         // Selecting random y position for bird
         let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.height - bird.size.height)))
-    
+        
         bird.position = CGPointMake(gameScene.size.width + 20, random)
-    
+        
         let moveTo = CGPointMake(60, gameScene.size.height/2)
         
         // Determine offset of location to projectile
@@ -91,7 +91,7 @@ class RTAMBirdManager {
         
         // Add the shoot amount to the current position
         let realDest = shootAmount + bird.position
-
+        
         // Create the actions
         let path = CGPathCreateMutable()
         CGPathMoveToPoint(path, nil, bird.position.x, bird.position.y)
@@ -113,25 +113,25 @@ class RTAMBirdManager {
         return bird
     }
     
-    func addBirdFromTop(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"green-bird-one")
+    func addBirdFromTop(gameScene: SKScene, birdName: String) -> SKSpriteNode? {
+        let birdTextureOne = SKTexture(imageNamed:birdName + "-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"green-bird-two")
+        let birdTextureTwo = SKTexture(imageNamed:birdName + "-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"green-bird-three")
+        let birdTextureThree = SKTexture(imageNamed:birdName + "-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"green-bird-four")
+        let birdTextureFour = SKTexture(imageNamed:birdName +  "-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"green-bird-five")
+        let birdTextureFive = SKTexture(imageNamed:birdName + "-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
-
+        
         bird.physicsBody = SKPhysicsBody(circleOfRadius: (bird.size.width/2))
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
@@ -139,7 +139,7 @@ class RTAMBirdManager {
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
         bird.setScale(0.50)
         bird.anchorPoint = CGPointMake(0.5, 0.5)
-        bird.name = "top-bird"
+        bird.name = birdName
         
         // Selecting random y position for bird
         let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.width - gameScene.size.width/1.8)) + UInt32(gameScene.size.width/1.5))
@@ -167,29 +167,29 @@ class RTAMBirdManager {
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
         self.birds.append(bird)
-
+        
         return bird
     }
     
-    func addBirdFromBottom(gameScene: SKScene) -> SKSpriteNode? {
-        let birdTextureOne = SKTexture(imageNamed:"yellow-bird-one")
+    func addBirdFromBottom(gameScene: SKScene, birdName: String) -> SKSpriteNode? {
+        let birdTextureOne = SKTexture(imageNamed:birdName + "-one")
         birdTextureOne.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureTwo = SKTexture(imageNamed:"yellow-bird-two")
+        let birdTextureTwo = SKTexture(imageNamed:birdName + "-two")
         birdTextureTwo.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureThree = SKTexture(imageNamed:"yellow-bird-three")
+        let birdTextureThree = SKTexture(imageNamed:birdName + "-three")
         birdTextureThree.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFour = SKTexture(imageNamed:"yellow-bird-four")
+        let birdTextureFour = SKTexture(imageNamed:birdName + "-four")
         birdTextureFour.filteringMode = SKTextureFilteringMode.Nearest
         
-        let birdTextureFive = SKTexture(imageNamed:"yellow-bird-five")
+        let birdTextureFive = SKTexture(imageNamed:birdName + "-five")
         birdTextureFive.filteringMode = SKTextureFilteringMode.Nearest
         
         let flap = SKAction.repeatActionForever(SKAction.animateWithTextures([birdTextureOne, birdTextureTwo, birdTextureThree, birdTextureFour, birdTextureFive], timePerFrame:0.09));
         let bird = SKSpriteNode(texture: birdTextureOne)
-
+        
         bird.physicsBody = SKPhysicsBody(circleOfRadius: (bird.size.width/2))
         bird.physicsBody?.dynamic = true
         bird.physicsBody?.categoryBitMask = PhysicsCategory.Bird
@@ -197,7 +197,7 @@ class RTAMBirdManager {
         bird.physicsBody?.collisionBitMask = PhysicsCategory.None
         bird.setScale(0.50)
         bird.anchorPoint = CGPointMake(0.5, 0.5)
-        bird.name = "bottom-bird"
+        bird.name = birdName
         
         // Selecting random y position for bird
         let random : CGFloat = CGFloat(arc4random_uniform(UInt32(gameScene.size.width - gameScene.size.width/1.8)) + UInt32(gameScene.size.width/1.5))
@@ -223,12 +223,12 @@ class RTAMBirdManager {
         
         bird.runAction(flap)
         bird.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-
+        
         self.birds.append(bird)
         
         return bird
     }
-
+    
     func getSizeOfArray() -> Int {
         return self.birds.count;
     }
@@ -240,7 +240,7 @@ class RTAMBirdManager {
             return nil;
         }
     }
-
+    
     func removeBird(index: Int) {
         self.birds.removeAtIndex(index)
     }

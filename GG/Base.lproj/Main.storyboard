@@ -30,7 +30,7 @@
                     </view>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
-                        <segue destination="KOo-Zh-AOJ" kind="presentation" identifier="showGameOver" id="poS-TJ-480"/>
+                        <segue destination="KOo-Zh-AOJ" kind="presentation" identifier="showGameOver" modalTransitionStyle="coverVertical" id="poS-TJ-480"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btX-cZ-eVz" sceneMemberID="firstResponder"/>
