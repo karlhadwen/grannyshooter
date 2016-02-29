@@ -3,9 +3,10 @@ import SpriteKit
 import GameKit
 import iAd
 
-class GameOverViewController: UIViewController, GKGameCenterControllerDelegate, ADBannerViewDelegate  {
+class GameOverViewController: UIViewController, GKGameCenterControllerDelegate, ADBannerViewDelegate {
     let APP_ID = 1081143952;
     var viewController: GameOverViewController!
+    var bannerView: ADBannerView!
     
     @IBOutlet weak var scoreLbl: UILabel!
     @IBOutlet weak var bestScoreLbl: UILabel!
@@ -14,15 +15,25 @@ class GameOverViewController: UIViewController, GKGameCenterControllerDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         changeConstraintForScoresBasedOnScreenSize()
         var scoreStr = String(mainInstance.score)
         scoreLbl.text = scoreStr
         saveHighscore(mainInstance.score)
         checkAndSaveBestScore()
         bestScoreLbl.text = String(highScore())
+        
+        bannerView = ADBannerView(adType: .Banner)
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        bannerView.delegate = self
+        bannerView.hidden = true
+        view.addSubview(bannerView)
+        
+        let viewsDictionary = ["bannerView": bannerView]
+        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
+        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
     }
-    
+
     @IBAction func rateAppBtn(sender: AnyObject) {
         rateApp()
     }
@@ -34,6 +45,14 @@ class GameOverViewController: UIViewController, GKGameCenterControllerDelegate, 
     @IBAction func scoreboardLbl(sender: AnyObject) {
         saveHighscore(mainInstance.score)
         showLeaderboardScreen()
+    }
+    
+    func bannerViewDidLoadAd(banner: ADBannerView!) {
+        bannerView.hidden = false
+    }
+    
+    func bannerView(banner: ADBannerView!, didFailToReceiveAdWithError error: NSError!) {
+        bannerView.hidden = true
     }
     
     func changeConstraintForScoresBasedOnScreenSize() {

@@ -62,6 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var hasRpgBeenShot = true;
     var numberOfBalloonsLeft = 4;
     var numberOfRpgShotsLeft = 5;
+    var gameOver = false
     
     var grannyImageNoMuzzle = "granny-ak47-no-muzzle";
     var grannyImageWithMuzzle = "granny-ak47-muzzle";
@@ -71,9 +72,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     var balloonImage = "four-balloons"
 
     let useRpg = SKSpriteNode(texture: SKTexture(imageNamed: "bazooka"), size: CGSizeMake(75, 75))
-    let resumeButton = SKSpriteNode(texture: SKTexture(imageNamed: "resume"), size: CGSizeMake(75, 75))
     
     override func didMoveToView(view: SKView) {
+        self.view?.paused = true
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("pauseGameScene"), name: "PauseGameScene", object: nil)
         
         if let playAK47 = self.setupAudioPlayerWithFile("ak47", type: "mp3") {
@@ -129,7 +130,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         self.scoreTotalLbl.hidden = true
         self.addChild(self.scoreTotalLbl);
         
-        self.useRpg.position = CGPointMake(self.frame.size.width-self.frame.size.width*0.15, 20)
+        self.useRpg.position = CGPointMake(self.frame.size.width-self.frame.size.width*0.15, 40)
         self.useRpg.anchorPoint = CGPointMake(0,0)
         self.useRpg.name = "bazooka"
         self.useRpg.zPosition = 1
@@ -152,14 +153,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
         
         dispatch_after(dispatchTime, dispatch_get_main_queue(), {
             self.scoreTotalLbl.hidden = false;
-            self.timerLevels = NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
+            self.timerLevels = NSTimer.scheduledTimerWithTimeInterval(7, target: self, selector: "updateBirdSpeedIncrementally", userInfo: nil, repeats: true)
         })
     }
     
     func pauseGameScene() {
         self.view?.paused = true
     }
-    
+
     func updateScore() {
         self.score = self.score + 1
         scoreTotalLbl.text = String(self.score);
@@ -185,8 +186,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
     }
     
     func updateBirdSpeedIncrementally() {
-        if (birdManager.durationOfFlight >= 10){
-            birdManager.durationOfFlight = birdManager.durationOfFlight - 3
+        if (birdManager.durationOfFlight >= 9) {
+            birdManager.durationOfFlight = birdManager.durationOfFlight - 3.5
         }
     }
     
@@ -436,23 +437,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate  {
             if (self.numberOfGrannyHitsLeft) == 0 {
                 mainInstance.score = self.score
                 gamescene_delegate?.gameOverDelegateFunc()
+                self.gameOver = true
+                self.view?.paused = true
             }
         }
     }
     
     override func update(currentTime: CFTimeInterval) {
-        if self.countDownDone {
-            if currentTime - self.lastBirdAdded > 0.6 {
-                self.lastBirdAdded = currentTime + 0.6
-                
-                let bird = self.birdManager.addBird(self, birdName: "yellow-bird")!
-                self.addChild(bird)
-                
-                let topBird = self.birdManager.addBirdFromTop(self, birdName: "yellow-bird")!
-                self.addChild(topBird)
-                
-                let bottomBird = self.birdManager.addBirdFromBottom(self, birdName: "green-bird")!
-                self.addChild(bottomBird)
+        if (!gameOver) {
+            if self.countDownDone {
+                if currentTime - self.lastBirdAdded > 0.6 {
+                    self.lastBirdAdded = currentTime + 0.6
+                    
+                    let bird = self.birdManager.addBird(self, birdName: "yellow-bird")!
+                    self.addChild(bird)
+                    
+                    let topBird = self.birdManager.addBirdFromTop(self, birdName: "yellow-bird")!
+                    self.addChild(topBird)
+                    
+                    let bottomBird = self.birdManager.addBirdFromBottom(self, birdName: "green-bird")!
+                    self.addChild(bottomBird)
+                }
             }
         }
     }

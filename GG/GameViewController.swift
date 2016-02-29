@@ -6,6 +6,9 @@ class GameViewController: UIViewController, GameOverDelegate, ADBannerViewDelega
     var scene: GameScene!
     var bannerView: ADBannerView!
     
+    @IBOutlet var gameSceneView: SKView!
+    @IBOutlet var backgroundInst: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bannerView = ADBannerView(adType: .Banner)
@@ -18,31 +21,61 @@ class GameViewController: UIViewController, GameOverDelegate, ADBannerViewDelega
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[bannerView]|", options: [], metrics: nil, views: viewsDictionary))
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: "removeInst:")
+        backgroundInst.addGestureRecognizer(tapGesture)
+        backgroundInst.userInteractionEnabled = true
+        
         let skView = self.view as! SKView
         let myScene = GameScene(size: skView.frame.size)
         myScene.gamescene_delegate = self
         skView.presentScene(myScene)
+        checkInstructionsLimit()
+    }
+    
+    func bannerViewActionShouldBegin(banner: ADBannerView!, willLeaveApplication willLeave: Bool) -> Bool {
+        gameSceneView.paused = true
+        return true
+    }
+
+    func checkInstructionsLimit() {
+        if getInstructions()<2 {
+            saveInstructions()
+        } else {
+            gameSceneView.paused = false
+            backgroundInst.removeFromSuperview()
+        }
+    }
+    
+    func resetInstructions() {
+        NSUserDefaults.standardUserDefaults().removeObjectForKey("instructions")
+    }
+    
+    func saveInstructions() {
+        NSUserDefaults.standardUserDefaults().setInteger(getInstructions()+1, forKey: "instructions")
+    }
+    
+    func getInstructions() -> Int {
+        return NSUserDefaults.standardUserDefaults().integerForKey("instructions")
+    }
+    
+    func removeInst(sender: UITapGestureRecognizer) {
+        if (sender.state == .Ended) {
+            backgroundInst.removeFromSuperview()
+            backgroundInst = nil
+            gameSceneView.paused = false
+        }
     }
     
     func bannerViewDidLoadAd(banner: ADBannerView!) {
         bannerView.hidden = false
     }
-    
+
     func bannerView(banner: ADBannerView!, didFailToReceiveAdWithError error: NSError!) {
         bannerView.hidden = true
     }
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destination = segue.destinationViewController
-        destination.interstitialPresentationPolicy = ADInterstitialPresentationPolicy.Automatic
-    }
     
     func gameOverDelegateFunc() {
-        let delay = 0.5 * Double(NSEC_PER_SEC)
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-        dispatch_after(time, dispatch_get_main_queue()) {
-            self.performSegueWithIdentifier("showGameOver", sender: nil)
-        }
+        self.performSegueWithIdentifier("showGameOver", sender: nil)
     }
     
     override func shouldAutorotate() -> Bool {

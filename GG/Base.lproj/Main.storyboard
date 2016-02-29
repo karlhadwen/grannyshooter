@@ -26,16 +26,34 @@
                     <view key="view" contentMode="scaleToFill" id="bdc-N1-crn" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="instructions" translatesAutoresizingMaskIntoConstraints="NO" id="QCk-j0-KEc">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="414"/>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="QCk-j0-KEc" firstAttribute="top" secondItem="PCf-gQ-wO7" secondAttribute="bottom" id="Cqo-7V-x8d"/>
+                            <constraint firstItem="QCk-j0-KEc" firstAttribute="centerX" secondItem="bdc-N1-crn" secondAttribute="centerX" id="WuW-3J-LDw"/>
+                            <constraint firstItem="b3d-qh-BLL" firstAttribute="top" secondItem="QCk-j0-KEc" secondAttribute="bottom" id="YJL-7j-gU2"/>
+                            <constraint firstItem="QCk-j0-KEc" firstAttribute="centerY" secondItem="bdc-N1-crn" secondAttribute="centerY" id="hLO-2g-zOe"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="hLO-2g-zOe"/>
+                            </mask>
+                        </variation>
                     </view>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
+                        <outlet property="backgroundInst" destination="QCk-j0-KEc" id="dg1-Bq-spM"/>
+                        <outlet property="gameSceneView" destination="bdc-N1-crn" id="hWO-c8-uW4"/>
                         <segue destination="KOo-Zh-AOJ" kind="presentation" identifier="showGameOver" modalTransitionStyle="coverVertical" id="poS-TJ-480"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btX-cZ-eVz" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1297" y="770"/>
+            <point key="canvasLocation" x="1315" y="738"/>
         </scene>
         <!--Game Over View Controller-->
         <scene sceneID="6wB-7B-e57">
@@ -256,6 +274,7 @@
     <resources>
         <image name="game-end-scoreboard-button" width="300" height="274"/>
         <image name="home-screen" width="2000" height="1124"/>
+        <image name="instructions" width="2208" height="1242"/>
         <image name="rate_button" width="365" height="163"/>
         <image name="reply-scoreboard-button" width="300" height="274"/>
         <image name="score-screen" width="4000" height="2248"/>
